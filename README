@@ -1,0 +1,2 @@
+An implementation of CacheAPI for Play 2.0 final.
+Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
