@@ -1,2 +1,4 @@
 An implementation of CacheAPI for Play 2.0 final.
 Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
+
+This file was modified by IntelliJ IDEA 11.0.2 for binding GitHub repository
