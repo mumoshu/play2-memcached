@@ -21,4 +21,8 @@ object ApplicationBuild extends Build {
       // Add your own project settings here
     ).dependsOn(main)
 
+    val javaSample = PlayProject(appName + "-java-sample", appVersion, path = file("samples/java"), mainLang = JAVA).settings(
+      // Add your own project settings here
+    ).dependsOn(main)
+
 }
