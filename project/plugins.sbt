@@ -10,3 +10,9 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 addSbtPlugin("play" % "sbt-plugin" % "2.0")
 
 resolvers += "Spy Repository" at "http://files.couchbase.com/maven2"
+
+// I'm releasing the plugin to a Maven Repository
+resolvers += Resolver.url("sbt-plugin-releases", /* no new line */
+  new URL("http://scalasbt.artifactoryonline.com/scalasbt/sbt-plugin-releases"))(Resolver.ivyStylePatterns)
+
+addSbtPlugin("com.jsuereth" % "xsbt-gpg-plugin" % "0.5")

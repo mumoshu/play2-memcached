@@ -14,7 +14,8 @@ object ApplicationBuild extends Build {
 
     val main = PlayProject(appName, appVersion, appDependencies).settings(
       // Add your own project settings here      
-      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2"
+      resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
+      organization := "com.github.mumoshu"
     )
 
     val scalaSample = PlayProject(appName + "-scala-sample", appVersion, path = file("samples/scala"), mainLang = SCALA).settings(
