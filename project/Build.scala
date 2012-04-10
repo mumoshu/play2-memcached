@@ -7,15 +7,12 @@ object ApplicationBuild extends Build {
     val appName         = "play2-memcached"
     val appVersion      = "0.1-SNAPSHOT"
 
-
-    val appDependencies = Seq(
-      "spy" % "spymemcached" % "2.6"
-    )
-
-    val main = PlayProject(appName, appVersion, appDependencies).settings(
-      // Add your own project settings here      
+    val main = PlayProject(appName, appVersion).settings(
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
+      libraryDependencies += "spy" % "spymemcached" % "2.6",
+      libraryDependencies += "play" %% "play" % "2.0",
       organization := "com.github.mumoshu",
+      version := appVersion,
       publishTo <<= version { v: String =>
         val nexus = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
