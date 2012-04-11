@@ -31,7 +31,7 @@ Specify the host name or IP address of the memcached server, and the port number
   memcached.host="127.0.0.1:11211"
 ```
 
-Then, you can use the `play.api.Cache` object to put a key and a value in memcached:
+Then, you can use the `play.api.cache.Cache` object to put a key and a value in memcached:
 
 ```scala
  Cache.set("key", "theValue")
