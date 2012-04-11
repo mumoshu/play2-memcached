@@ -51,4 +51,3 @@ To disable the plugin in `application.conf`:
 ```
   memcachedplugin=disabled
 ```
- REA
