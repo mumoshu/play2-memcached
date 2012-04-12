@@ -9,7 +9,7 @@ Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
 Add the following dependency to your Play project:
 
 ```scala
-  val appDependenies = Seq(
+  val appDependencies = Seq(
     "com.github.mumoshu" %% "play2-memcached" % "0.1-SNAPSHOT"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
