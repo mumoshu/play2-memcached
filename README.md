@@ -51,3 +51,7 @@ To disable the plugin in `application.conf`:
 ```
   memcachedplugin=disabled
 ```
+
+## Build status
+
+[![Build Status](https://secure.travis-ci.org/mumoshu/play2-memcached.png)](http://travis-ci.org/mumoshu/play2-memcached)
