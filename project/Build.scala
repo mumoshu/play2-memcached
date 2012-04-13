@@ -7,11 +7,11 @@ object ApplicationBuild extends Build {
     val appName         = "play2-memcached"
     val appVersion      = "0.1-SNAPSHOT"
 
-  lazy val root = Project("root", base = file("."), settings = Seq(aggregate in test := false))
-    .dependsOn(main)
-    .aggregate(main, scalaSample, javaSample)
+  lazy val root = Project("root", base = file("."))
+    .dependsOn(plugin)
+    .aggregate(scalaSample, javaSample)
 
-  lazy val main = PlayProject(appName, appVersion).settings(
+  lazy val plugin = Project(appName, base = file("plugin")).settings(
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       libraryDependencies += "spy" % "spymemcached" % "2.6",
       libraryDependencies += "play" %% "play" % "2.0",
@@ -48,12 +48,12 @@ object ApplicationBuild extends Build {
         )
     )
 
-    lazy val scalaSample: ProjectReference = PlayProject(appName + "-scala-sample", appVersion, path = file("samples/scala"), mainLang = SCALA).settings(
+    lazy val scalaSample = PlayProject("scala-sample", path = file("samples/scala"), mainLang = SCALA).settings(
       // Add your own project settings here
-    ).dependsOn(main)
+    ).dependsOn(plugin)
 
-    lazy val javaSample: ProjectReference = PlayProject(appName + "-java-sample", appVersion, path = file("samples/java"), mainLang = JAVA).settings(
+    lazy val javaSample = PlayProject("java-sample", path = file("samples/java"), mainLang = JAVA).settings(
       // Add your own project settings here
-    ).dependsOn(main)
+    ).dependsOn(plugin)
 
 }
