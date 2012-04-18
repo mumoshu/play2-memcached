@@ -13,7 +13,8 @@ Add the following dependency to your Play project:
     "com.github.mumoshu" %% "play2-memcached" % "0.1-SNAPSHOT"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
-    resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public"
+    resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
   )
 ```
 
