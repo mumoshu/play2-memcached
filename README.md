@@ -32,6 +32,13 @@ Specify the host name or IP address of the memcached server, and the port number
   memcached.host="127.0.0.1:11211"
 ```
 
+If you have multiple memcached instances over different host names or IP addresses, provide them like:
+
+```
+  memcached.1.host="mumocached1:11211"
+  memcached.2.host="mumocached2:11211"
+```
+
 Then, you can use the `play.api.cache.Cache` object to put a key and a value in memcached:
 
 ```scala
@@ -51,6 +58,13 @@ To disable the plugin in `application.conf`:
 
 ```
   memcachedplugin=disabled
+```
+
+If you memcached requires the client an authentication, provide username/password like:
+
+```
+  memcached.user=misaka
+  memcached.password=mikoto
 ```
 
 ## Build status
