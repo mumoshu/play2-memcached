@@ -26,7 +26,13 @@ My recommendation is to put it in `conf/` directory.
   5000:com.github.mumoshu.play2.memcached.MemcachedPlugin
 ```
 
-Specify the host name or IP address of the memcached server, and the port number in `application.conf`:
+First of all, in `application.conf`, disable the EhCachePlugin - Play's default implementation of CacheAPI:
+
+```
+  ehcacheplugin=disabled
+```
+
+Specify the host name or IP address of the memcached server, and the port number:
 
 ```
   memcached.host="127.0.0.1:11211"
