@@ -31,7 +31,7 @@ class Slf4JLogger(name: String) extends AbstractLogger(name) {
 class MemcachedPlugin(app: Application) extends CachePlugin {
 
   lazy val client = {
-    System.setProperty("net.spy.log.LoggerImpl", "com.github.mumoshu.play2.memcached.Slf4jLogger")
+    System.setProperty("net.spy.log.LoggerImpl", "com.github.mumoshu.play2.memcached.Slf4JLogger")
 
     lazy val singleHost = app.configuration.getString("memcached.host").map(AddrUtil.getAddresses)
     lazy val multipleHosts = app.configuration.getString("memcached.1.host").map { _ =>
