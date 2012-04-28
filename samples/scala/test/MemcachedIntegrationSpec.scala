@@ -51,6 +51,15 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       // TODO api.set(key, null, expiration)
       // TODO api.get(key) must be none
     }
+
+    "store the data when setting expiration time to zero (maybe eternally)" in new defaultContext {
+
+      val api = current.plugin[MemcachedPlugin].map(_.api).get
+
+      api.set(key, value + "*", expiration)
+      api.set(key, value, 0)
+      api.get(key) must be some (value)
+    }
   }
 
   "The CacheAPI implementation of MemcachedPlugin" >> {
