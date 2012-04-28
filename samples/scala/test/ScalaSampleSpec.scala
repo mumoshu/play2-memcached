@@ -7,7 +7,10 @@ object ScalaSampleSpec extends Specification {
   def connectingLocalMemcached[T](block: => T):T =
     running(
       FakeApplication(
-        additionalConfiguration = Map("memcached.host" -> "127.0.0.1:11211")
+        additionalConfiguration = Map(
+          "ehcacheplugin" -> "disabled",
+          "memcached.host" -> "127.0.0.1:11211"
+        )
       )
     )(block)
 
