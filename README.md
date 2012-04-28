@@ -58,7 +58,7 @@ If you want the value expired after some time:
 
 ```scala
  Cache.set("key", "theValueWithExpirationTime", 3600)
- # The value expires after 3600 seconds.
+ // The value expires after 3600 seconds.
 ```
 
 To get the value for a key:
