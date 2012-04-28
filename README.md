@@ -10,7 +10,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.1-SNAPSHOT"
+    "com.github.mumoshu" %% "play2-memcached" % "0.2-SNAPSHOT"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
