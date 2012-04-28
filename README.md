@@ -45,16 +45,32 @@ If you have multiple memcached instances over different host names or IP address
   memcached.2.host="mumocached2:11211"
 ```
 
-Then, you can use the `play.api.cache.Cache` object to put a key and a value in memcached:
+Then, you can use the `play.api.cache.Cache` object to store a value in memcached:
 
 ```scala
  Cache.set("key", "theValue")
 ```
 
-Or to get a value:
+This way, memcached tries to retain the stored value eternally.
+Of course Memcached does not guarantee eternity of the value, nor can it retain the value on restart.
+
+If you want the value expired after some time:
+
+```scala
+ Cache.set("key", "theValueWithExpirationTime", 3600)
+ # The value expires after 3600 seconds.
+```
+
+To get the value for a key:
 
 ```scala
  val theValue = Cache.getAs[String]("key")
+```
+
+You can remove the value (It's not yet a part of Play 2.0's Cache API, though):
+
+```scala
+ play.api.Play.current.plugin[MemcachedPlugin].get.api.remove("keyToRemove")
 ```
 
 ## Additional configurations
