@@ -5,7 +5,7 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
     val appName         = "play2-memcached"
-    val appVersion      = "0.1-SNAPSHOT"
+    val appVersion      = "0.2-SNAPSHOT"
 
   lazy val root = Project("root", base = file("."))
     .dependsOn(plugin)
