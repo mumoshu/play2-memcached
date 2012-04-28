@@ -53,4 +53,16 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
     }
   }
 
+  "The CacheAPI implementation of MemcachedPlugin" >> {
+
+    "provides its own way to remove stored values" in new defaultContext {
+
+      val api = current.plugin[MemcachedPlugin].get.api
+
+      api.set(key, value, expiration)
+      api.remove(key)
+      api.get(key) should be none
+    }
+  }
+
 }

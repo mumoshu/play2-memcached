@@ -94,6 +94,10 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
     def set(key: String, value: Any, expiration: Int) {
       client.set(key, expiration, value, tc)
     }
+
+    def remove(key: String) {
+      client.delete(key)
+    }
   }
 
   /**
