@@ -11,24 +11,28 @@ import net.spy.memcached.transcoders.{Transcoder, SerializingTranscoder}
 import net.spy.memcached.compat.log.{Level, AbstractLogger}
 
 class Slf4JLogger(name: String) extends AbstractLogger(name) {
-  
-  def isDebugEnabled = Logger.isDebugEnabled
 
-  def isInfoEnabled = Logger.isInfoEnabled
+  val logger = Logger("memcached")
+  
+  def isDebugEnabled = logger.isDebugEnabled
+
+  def isInfoEnabled = logger.isInfoEnabled
 
   def log(level: Level, msg: AnyRef, throwable: Throwable) {
     val message = msg.toString
     level match {
-      case Level.DEBUG => Logger.debug(message, throwable)
-      case Level.INFO => Logger.info(message, throwable)
-      case Level.WARN => Logger.warn(message, throwable)
-      case Level.ERROR => Logger.error(message, throwable)
-      case Level.FATAL => Logger.error("[FATAL] " + message, throwable)
+      case Level.DEBUG => logger.debug(message, throwable)
+      case Level.INFO => logger.info(message, throwable)
+      case Level.WARN => logger.warn(message, throwable)
+      case Level.ERROR => logger.error(message, throwable)
+      case Level.FATAL => logger.error("[FATAL] " + message, throwable)
     }
   }
 }
 
 class MemcachedPlugin(app: Application) extends CachePlugin {
+
+  lazy val logger = Logger("memcached.plugin")
 
   lazy val client = {
     System.setProperty("net.spy.log.LoggerImpl", "com.github.mumoshu.play2.memcached.Slf4JLogger")
@@ -112,12 +116,12 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   }
 
   override def onStart() {
-    Logger.info("Starting MemcachedPlugin.")
+    logger.info("Starting MemcachedPlugin.")
     client
   }
 
   override def onStop() {
-    Logger.info("Stopping MemcachedPlugin.")
+    logger.info("Stopping MemcachedPlugin.")
     client.shutdown
     Thread.interrupted()
   }
