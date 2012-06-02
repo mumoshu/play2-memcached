@@ -1,8 +1,11 @@
+import com.github.mumoshu.play2.memcached.MemcachedPlugin
 import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 
 object ScalaSampleSpec extends Specification {
+
+  sequential
 
   def connectingLocalMemcached[T](block: => T):T =
     running(
@@ -12,7 +15,10 @@ object ScalaSampleSpec extends Specification {
           "memcached.host" -> "127.0.0.1:11211"
         )
       )
-    )(block)
+    ) {
+      play.api.Play.current.plugin(classOf[MemcachedPlugin]).get.client.delete("key")
+      block
+    }
 
   def c(url: String): String = contentAsString(routeAndCall(FakeRequest(GET, url)).get)
 

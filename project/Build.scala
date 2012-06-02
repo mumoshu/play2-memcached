@@ -49,11 +49,11 @@ object ApplicationBuild extends Build {
     )
 
     lazy val scalaSample = PlayProject("scala-sample", path = file("samples/scala"), mainLang = SCALA).settings(
-      // Add your own project settings here
+      parallelExecution in Test := false
     ).dependsOn(plugin)
 
     lazy val javaSample = PlayProject("java-sample", path = file("samples/java"), mainLang = JAVA).settings(
-      // Add your own project settings here
+      parallelExecution in Test := false
     ).dependsOn(plugin)
 
 }
