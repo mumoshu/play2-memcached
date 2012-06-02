@@ -10,7 +10,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.2-SNAPSHOT"
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.1-SNAPSHOT"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
@@ -75,6 +75,8 @@ You can remove the value (It's not yet a part of Play 2.0's Cache API, though):
 
 ## Additional configurations
 
+### Disabling the plugin
+
 You can disable the plugin in a similar manner to Play's build-in Ehcache Plugin.
 To disable the plugin in `application.conf`:
 
@@ -82,11 +84,22 @@ To disable the plugin in `application.conf`:
   memcachedplugin=disabled
 ```
 
-If you memcached requires the client an authentication, provide username/password like:
+### Authentication with SASL
+
+If you memcached requires the client an authentication with SASL, provide username/password like:
 
 ```
   memcached.user=misaka
   memcached.password=mikoto
+```
+
+### Configure logging
+
+By default, the plugin (or the spymemcached under the hood) does not output any logs at all.
+If you need to peek into what's going on, set the log level like:
+
+```
+  logger.memcached=DEBUG
 ```
 
 ## Build status
