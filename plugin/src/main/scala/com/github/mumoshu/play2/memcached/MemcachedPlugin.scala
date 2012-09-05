@@ -6,7 +6,8 @@ import net.spy.memcached.auth.{PlainCallbackHandler, AuthDescriptor}
 import net.spy.memcached.{ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
 import play.api.cache.{CacheAPI, CachePlugin}
 import play.api.{Logger, Play, Application}
-import util.control.Exception.catching
+//import util.control.Exception.catching
+import scala.util.control.Exception._
 import net.spy.memcached.transcoders.{Transcoder, SerializingTranscoder}
 import net.spy.memcached.compat.log.{Level, AbstractLogger}
 
@@ -68,16 +69,50 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
 
   }
 
-  lazy val tc = new SerializingTranscoder().asInstanceOf[Transcoder[Any]]
+  import java.io._
+  
+  class CustomSerializing extends SerializingTranscoder{
+    
+    override protected def deserialize(data: Array[Byte]): java.lang.Object = {
+      try {
+         new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(data)) {
+           override protected def resolveClass(desc: ObjectStreamClass)  = {
+             Class.forName(desc.getName(), false, play.api.Play.current.classloader)  
+           }
+         }.readObject()
+      }catch{
+        case e: Exception => {
+         Logger.error("Could not deserialize", e);
+         null
+        }
+      }
+    }
+
+    override protected def serialize(obj: java.lang.Object) = {
+      try {
+        val bos: ByteArrayOutputStream = new ByteArrayOutputStream()
+        new ObjectOutputStream(bos).writeObject(obj)
+        bos.toByteArray()
+      }catch{
+        case e: Exception => {
+          Logger.error("Could not serialize", e)
+          null
+        }
+      }
+    }
+  } 
+
+  //lazy val tc = new SerializingTranscoder().asInstanceOf[Transcoder[Any]]
+  lazy val tc = new CustomSerializing().asInstanceOf[Transcoder[Any]]
 
   lazy val api = new CacheAPI {
 
     def get(key: String) = {
-      Logger.info("Getting the cached for key " + key)
+      Logger.debug("Getting the cached for key " + key)
       val future = client.asyncGet(key, tc)
       catching[Any](classOf[Exception]) opt {
         val any = future.get(1, TimeUnit.SECONDS)
-        Logger.info("any is " + any.getClass)
+        Logger.debug("any is " + any.getClass)
         any match {
           case x: java.lang.Byte => x.byteValue()
           case x: java.lang.Short => x.shortValue()
