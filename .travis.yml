@@ -2,4 +2,7 @@ language: scala
 scala:
   - 2.9.1
 services:
-  - memcached
+  - memcache
+jdk:
+  - openjdk6
+  - oraclejdk6
