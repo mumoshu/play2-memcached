@@ -10,7 +10,7 @@ Add the following dependency to your Play project:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.2.1-SNAPSHOT"
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.2-SNAPSHOT"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
@@ -101,6 +101,10 @@ If you need to peek into what's going on, set the log level like:
 ```
   logger.memcached=DEBUG
 ```
+
+### Version history
+
+0.2.2 Fixed the logging leak issue. You don't get a bunch of INFO messages to play app's default logger anymore.
 
 ## Build status
 
