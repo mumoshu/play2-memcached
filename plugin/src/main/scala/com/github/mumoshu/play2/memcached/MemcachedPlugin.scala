@@ -81,7 +81,7 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
          }.readObject()
       }catch{
         case e: Exception => {
-         Logger.error("Could not deserialize", e);
+         logger.error("Could not deserialize", e);
          null
         }
       }
@@ -99,7 +99,7 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
         bos.toByteArray()
       }catch{
         case e: Exception => {
-          Logger.error("Could not serialize", e)
+          logger.error("Could not serialize", e)
           null
         }
       }
