@@ -30,7 +30,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       Cache.get(key) must be some (value)
       current.plugin[MemcachedPlugin].map(_.api).get.get(key) must be some (value)
 
-      Cache.set(key, null) should throwA[NullPointerException]
+      Cache.set(key, null) should throwA[Exception]
 
       // TODO Cache.set(key, null)
       // TODO Cache.get(key) must be none
@@ -46,7 +46,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       api.set(key, value, expiration)
       api.get(key) must be some (value)
 
-      api.set(key, null, expiration) should throwA[NullPointerException]
+      api.set(key, null, expiration) should throwA[Exception]
 
       // TODO api.set(key, null, expiration)
       // TODO api.get(key) must be none

@@ -79,7 +79,7 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
     "throws an exception on setting null" in new cacheImpls {
 
-      memcache.set(key, null, expiration) should throwA[NullPointerException]
+      memcache.set(key, null, expiration) should throwA[Exception]
       // TODO memcache.set(key, null, expiration)
       // TODO memcache.get(key) must be none
     }
