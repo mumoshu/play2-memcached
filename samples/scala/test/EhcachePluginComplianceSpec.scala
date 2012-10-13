@@ -67,7 +67,7 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
       ehcache.get(key) must be equalTo (Some(null))
     }
 
-    "does not clear the stored data but set it external on providing 0 to the expiration parameter" in new cacheImpls {
+    "does not clear the stored data but make it eternal when setting expiration to zero" in new cacheImpls {
 
       val value = "theValueShouldRemain"
       ehcache.set(key, value, 0)
@@ -77,20 +77,16 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
   "Memcached implementation of CacheAPI" should {
 
-    "throws an exception on setting null" in new cacheImpls {
+    "throw an exception on setting null" in new cacheImpls {
 
-      memcache.set(key, null, expiration) should throwA[Exception]
-      // TODO memcache.set(key, null, expiration)
-      // TODO memcache.get(key) must be none
+      memcache.set(key, null, expiration) must throwA[Exception]
     }
 
-    "clear the stored data" in new cacheImpls {
+    "does not clear the stored data but make it eternal when setting expiration to zero" in new cacheImpls {
 
-      val value = "theValueShouldNotRemain"
+      val value = "theValueShouldRemain"
       memcache.set(key, value, 0)
-      // TODO this is not an expected behavior
       memcache.get(key) must be some (value)
-      // TODO memcache.get(key) must be none
     }
   }
 

@@ -23,33 +23,22 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
 
   "play.api.cache.Cache" should {
 
-    "clear the stored data when setting a null value" in new defaultContext {
+    "throws an exception on setting null" in new defaultContext {
 
       Cache.set(key, value, expiration)
-
       Cache.get(key) must be some (value)
-      current.plugin[MemcachedPlugin].map(_.api).get.get(key) must be some (value)
 
-      Cache.set(key, null) should throwA[Exception]
-
-      // TODO Cache.set(key, null)
-      // TODO Cache.get(key) must be none
+      Cache.set(key, null) must throwA[Exception]
     }
   }
 
   "The Cache API implementation of MemcachedPlugin" should {
 
-    "clear the stored data when setting a null value" in new defaultContext {
+    "throws an exception on setting null" in new defaultContext {
 
       val api = current.plugin[MemcachedPlugin].map(_.api).get
 
-      api.set(key, value, expiration)
-      api.get(key) must be some (value)
-
-      api.set(key, null, expiration) should throwA[Exception]
-
-      // TODO api.set(key, null, expiration)
-      // TODO api.get(key) must be none
+      api.set(key, null, expiration) must throwA[Exception]
     }
 
     "store the data when setting expiration time to zero (maybe eternally)" in new defaultContext {
@@ -69,6 +58,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       val api = current.plugin[MemcachedPlugin].get.api
 
       api.set(key, value, expiration)
+      api.get(key) should be some(value)
       api.remove(key)
       api.get(key) should be none
     }

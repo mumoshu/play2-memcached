@@ -71,37 +71,27 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   import java.io._
   
   class CustomSerializing extends SerializingTranscoder{
-    
+
+    // You should not catch exceptions and return nulls here,
+    // because you should cancel the future returned by asyncGet() on any exception.
     override protected def deserialize(data: Array[Byte]): java.lang.Object = {
-      try {
-         new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(data)) {
-           override protected def resolveClass(desc: ObjectStreamClass)  = {
-             Class.forName(desc.getName(), false, play.api.Play.current.classloader)  
-           }
-         }.readObject()
-      }catch{
-        case e: Exception => {
-         logger.error("Could not deserialize", e);
-         null
+      new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(data)) {
+        override protected def resolveClass(desc: ObjectStreamClass) = {
+          Class.forName(desc.getName(), false, play.api.Play.current.classloader)
         }
-      }
+      }.readObject()
     }
 
+    // We don't catch exceptions here to make it corresponding to `deserialize`.
     override protected def serialize(obj: java.lang.Object) = {
-      try {
-        // Get along with the net.spy.memcached.transcoders.SerializingTranscoder which throws
-        // a NullPointerException on serializing null.
-        if (obj == null) {
-          throw new NullPointerException
-        }
+      // Get along with the net.spy.memcached.transcoders.SerializingTranscoder which throws
+      // a NullPointerException on serializing null.
+      if (obj == null) {
+        throw new NullPointerException
+      } else {
         val bos: ByteArrayOutputStream = new ByteArrayOutputStream()
         new ObjectOutputStream(bos).writeObject(obj)
         bos.toByteArray()
-      }catch{
-        case e: Exception => {
-          logger.error("Could not serialize", e)
-          null
-        }
       }
     }
   } 
@@ -113,23 +103,29 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
     def get(key: String) = {
       logger.debug("Getting the cached for key " + key)
       val future = client.asyncGet(key, tc)
-      catching[Any](classOf[Exception]) opt {
+      try {
         val any = future.get(1, TimeUnit.SECONDS)
-        logger.debug("any is " + any.getClass)
-        any match {
-          case x: java.lang.Byte => x.byteValue()
-          case x: java.lang.Short => x.shortValue()
-          case x: java.lang.Integer => x.intValue()
-          case x: java.lang.Long => x.longValue()
-          case x: java.lang.Float => x.floatValue()
-          case x: java.lang.Double => x.doubleValue()
-          case x: java.lang.Character => x.charValue()
-          case x: java.lang.Boolean => x.booleanValue()
-          case x => x
+        if (any != null) {
+          logger.debug("any is " + any.getClass)
         }
-      } orElse {
-        future.cancel(false)
-        None
+        Option(
+          any match {
+            case x: java.lang.Byte => x.byteValue()
+            case x: java.lang.Short => x.shortValue()
+            case x: java.lang.Integer => x.intValue()
+            case x: java.lang.Long => x.longValue()
+            case x: java.lang.Float => x.floatValue()
+            case x: java.lang.Double => x.doubleValue()
+            case x: java.lang.Character => x.charValue()
+            case x: java.lang.Boolean => x.booleanValue()
+            case x => x
+          }
+        )
+      } catch {
+        case e =>
+          logger.error("An error has occured while getting the value from memcached" , e)
+          future.cancel(false)
+          None
       }
     }
 
