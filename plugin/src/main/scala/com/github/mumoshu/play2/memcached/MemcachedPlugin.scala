@@ -89,6 +89,11 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
 
     override protected def serialize(obj: java.lang.Object) = {
       try {
+        // Get along with the net.spy.memcached.transcoders.SerializingTranscoder which throws
+        // a NullPointerException on serializing null.
+        if (obj == null) {
+          throw new NullPointerException
+        }
         val bos: ByteArrayOutputStream = new ByteArrayOutputStream()
         new ObjectOutputStream(bos).writeObject(obj)
         bos.toByteArray()
