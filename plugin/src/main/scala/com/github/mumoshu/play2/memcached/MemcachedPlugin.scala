@@ -73,11 +73,11 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   lazy val api = new CacheAPI {
 
     def get(key: String) = {
-      Logger.info("Getting the cached for key " + key)
+      logger.info("Getting the cached for key " + key)
       val future = client.asyncGet(key, tc)
       catching[Any](classOf[Exception]) opt {
         val any = future.get(1, TimeUnit.SECONDS)
-        Logger.info("any is " + any.getClass)
+        logger.info("any is " + any.getClass)
         any match {
           case x: java.lang.Byte => x.byteValue()
           case x: java.lang.Short => x.shortValue()
