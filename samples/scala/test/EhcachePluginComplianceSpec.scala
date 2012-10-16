@@ -73,6 +73,13 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
       ehcache.set(key, value, 0)
       ehcache.get(key) must be some (value)
     }
+
+    "does not clear the stored data, but set a `null` on `set(key, null, 0)`" in new cacheImpls {
+      ehcache.set(key, "aa", 0)
+      ehcache.set(key, null, 0)
+
+      ehcache.get(key) must be equalTo (Some(null))
+    }
   }
 
   "Memcached implementation of CacheAPI" should {

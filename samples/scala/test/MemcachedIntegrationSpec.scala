@@ -62,6 +62,15 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       api.remove(key)
       api.get(key) should be none
     }
+
+    "has an another way to remove the stored value" in new defaultContext {
+
+      Cache.set(key, "foo")
+
+      current.plugin[MemcachedPlugin].foreach(_.api.remove(key))
+
+      Cache.get(key) must beEqualTo (None)
+    }
   }
 
 }
