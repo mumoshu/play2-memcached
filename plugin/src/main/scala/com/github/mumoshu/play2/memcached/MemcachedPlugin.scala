@@ -84,15 +84,11 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
 
     // We don't catch exceptions here to make it corresponding to `deserialize`.
     override protected def serialize(obj: java.lang.Object) = {
-      // Get along with the net.spy.memcached.transcoders.SerializingTranscoder which throws
-      // a NullPointerException on serializing null.
-      if (obj == null) {
-        throw new NullPointerException
-      } else {
-        val bos: ByteArrayOutputStream = new ByteArrayOutputStream()
-        new ObjectOutputStream(bos).writeObject(obj)
-        bos.toByteArray()
-      }
+      val bos: ByteArrayOutputStream = new ByteArrayOutputStream()
+      // Allows serializing `null`.
+      // See https://github.com/mumoshu/play2-memcached/issues/7
+      new ObjectOutputStream(bos).writeObject(obj)
+      bos.toByteArray()
     }
   } 
 

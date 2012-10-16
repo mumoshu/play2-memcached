@@ -33,6 +33,8 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
       memcache.get(key) aka ("the value obtained from the Memcached impl") should be some (value)
     }
 
+    def both[T](block: CacheAPI => T): T = (ehcache :: memcache :: Nil).map(block).last
+
     def before {
     }
   }
@@ -57,26 +59,27 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
         testOnValue(new java.util.Date)
       }
     }
+
+    "keep stored data eternally when `expiration` argument is 0" in new cacheImpls {
+      both { api =>
+        val value = "theValueShouldRemain"
+        api.set(key, value, 0)
+        api.get(key) must be some (value)
+      }
+    }
   }
 
   "Ehcache implementations of Cache API" should {
 
-    "returns null on setting null" in new cacheImpls {
+    "store nulls on setting nulls" in new cacheImpls {
 
-      ehcache.set(key, null, expiration)
-      ehcache.get(key) must be equalTo (Some(null))
-    }
-
-    "does not clear the stored data but make it eternal when setting expiration to zero" in new cacheImpls {
-
-      val value = "theValueShouldRemain"
-      ehcache.set(key, value, 0)
-      ehcache.get(key) must be some (value)
-    }
-
-    "does not clear the stored data, but set a `null` on `set(key, null, 0)`" in new cacheImpls {
       ehcache.set(key, "aa", 0)
       ehcache.set(key, null, 0)
+
+      ehcache.get(key) must be equalTo (Some(null))
+
+      ehcache.set(key, "aa", 0)
+      ehcache.set(key, null, expiration)
 
       ehcache.get(key) must be equalTo (Some(null))
     }
@@ -84,16 +87,17 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
   "Memcached implementation of CacheAPI" should {
 
-    "throw an exception on setting null" in new cacheImpls {
+    "remove keys on setting nulls" in new cacheImpls {
 
-      memcache.set(key, null, expiration) must throwA[Exception]
-    }
+      memcache.set(key, "aa", 0)
+      memcache.set(key, null, expiration)
 
-    "does not clear the stored data but make it eternal when setting expiration to zero" in new cacheImpls {
+      memcache.get(key) must be none
 
-      val value = "theValueShouldRemain"
-      memcache.set(key, value, 0)
-      memcache.get(key) must be some (value)
+      memcache.set(key, "aa", 0)
+      memcache.set(key, null, 0)
+
+      memcache.get(key) must be none
     }
   }
 
