@@ -97,8 +97,8 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   lazy val api = new CacheAPI {
 
     def get(key: String) = {
-      logger.debug("Getting the cached for key " + key)
-      val future = client.asyncGet(key, tc)
+      logger.debug("Getting the cached for key " + prefix + key)
+      val future = client.asyncGet(prefix + key, tc)
       try {
         val any = future.get(1, TimeUnit.SECONDS)
         if (any != null) {
@@ -126,13 +126,15 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
     }
 
     def set(key: String, value: Any, expiration: Int) {
-      client.set(key, expiration, value, tc)
+      client.set(prefix + key, expiration, value, tc)
     }
 
     def remove(key: String) {
-      client.delete(key)
+      client.delete(prefix + key)
     }
   }
+  
+  lazy val prefix: String = app.configuration.getString("memcached.prefix").getOrElse("")
 
   /**
    * Is this plugin enabled.
