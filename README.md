@@ -102,10 +102,27 @@ If you need to peek into what's going on, set the log level like:
   logger.memcached=DEBUG
 ```
 
+### Namespacing
+
+You can prefix every key to put/get/remove with a global namespace.
+By default, the namespace is an empty string, implying you don't use namespacing at all.
+To enable namespacing, configure it in "application.conf":
+
+```
+  memcached.namespace=mikoto.
+```
+
 ### Version history
 
 0.2.2 Fixed the logging leak issue. You don't get a bunch of INFO messages to play app's default logger anymore.
+
 0.2.3 Allow removing keys in both Java and Scala ways described in Play's documentation. See MemcachedIntegrationSpec.scala for how to remove keys in Scala.
+
+0.2.4 Introduced "namespace" to prefix every key to put/get/remove with a global namespace configured in "application.conf"
+
+### Acknowledgement
+
+Thanks to gakuzzzz for the original idea of "namespacing" and the initial pull request for it.
 
 ## Build status
 

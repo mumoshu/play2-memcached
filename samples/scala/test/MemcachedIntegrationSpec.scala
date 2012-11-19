@@ -1,12 +1,15 @@
 import com.github.mumoshu.play2.memcached.MemcachedPlugin
 import java.io.{PrintWriter, BufferedReader, InputStreamReader}
 import java.net.Socket
+import org.specs2.mutable._
+import org.specs2.execute.Result
 import org.specs2.specification.Scope
 import play.api.cache.Cache
 import play.api.Play.current
 import play.api.test.{FakeApplication, TestServer}
+import play.api.test.Helpers._
 
-object MemcachedIntegrationSpec extends ServerIntegrationSpec {
+object MemcachedIntegrationSpec extends Specification {
 
   sequential
 
@@ -15,11 +18,17 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
     "memcached.host" -> "127.0.0.1:11211"
   )
 
-  trait defaultContext extends Scope {
+  case class context(additionalConfiguration: Map[String, String] = additionalConfiguration) extends Around {
 
     val key = "memcachedIntegrationSpecKey"
     val value = "value"
     val expiration = 1000
+
+    override def around[T <% Result](t: => T): Result = {
+      running(TestServer(3333, FakeApplication(additionalConfiguration = additionalConfiguration))) {
+        t
+      }
+    }
 
   }
 
@@ -51,7 +60,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
 
   "play.api.cache.Cache" should {
 
-    "remove keys on setting nulls" in new defaultContext {
+    "remove keys on setting nulls" in new context {
 
       Cache.set(key, value, expiration)
       Cache.get(key) must be some (value)
@@ -63,7 +72,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
 
   "The CacheAPI implementation of MemcachedPlugin" should {
 
-    "remove keys on setting nulls" in new defaultContext {
+    "remove keys on setting nulls" in new context {
 
       val api = current.plugin[MemcachedPlugin].map(_.api).get
 
@@ -73,7 +82,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       getValueLengthViaSocket(key) must not be none
     }
 
-    "store the data when setting expiration time to zero (maybe eternally)" in new defaultContext {
+    "store the data when setting expiration time to zero (maybe eternally)" in new context {
 
       val api = current.plugin[MemcachedPlugin].map(_.api).get
 
@@ -82,7 +91,7 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       api.get(key) must be some (value)
     }
 
-    "provides its own way to remove stored values" in new defaultContext {
+    "provides its own way to remove stored values" in new context {
 
       val api = current.plugin[MemcachedPlugin].get.api
 
@@ -94,13 +103,22 @@ object MemcachedIntegrationSpec extends ServerIntegrationSpec {
       getValueLengthViaSocket(key) must be none
     }
 
-    "has an another way to remove the stored value" in new defaultContext {
+    "has an another way to remove the stored value" in new context {
 
       Cache.set(key, "foo")
 
       current.plugin[MemcachedPlugin].foreach(_.api.remove(key))
 
       Cache.get(key) must beEqualTo (None)
+    }
+
+    "has an ability to prefix every key with the global namespace" in new context(additionalConfiguration.updated("memcached.namespace", "mikoto.")) {
+
+      Cache.set(key, "foo")
+
+      Cache.get(key) must be some("foo")
+
+      getValueLengthViaSocket("mikoto." + key) must be some(3)
     }
   }
 
