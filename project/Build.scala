@@ -14,12 +14,14 @@ object ApplicationBuild extends Build {
   lazy val plugin = Project(appName, base = file("plugin")).settings(
       scalaVersion := "2.10.0-RC1",
       // RCs are not binary compatible with the final version
-//      scalaBinaryVersion := "2.10.0-RC5",
+      scalaBinaryVersion := "2.10.0-RC1",
       crossScalaVersions := Seq("2.10.0-RC1"),
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       libraryDependencies += "spy" % "spymemcached" % "2.6",
-      libraryDependencies += "play" %% "play" % "2.1-RC1" cross CrossVersion.binary,
+      libraryDependencies += "play" %% "play" % "2.1-RC1" cross CrossVersion.binaryMapped {
+        case "2.10.0-RC1" => "2.10"
+      },
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
