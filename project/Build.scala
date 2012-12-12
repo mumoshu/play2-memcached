@@ -5,16 +5,21 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
     val appName         = "play2-memcached"
-    val appVersion      = "0.2.4-SNAPSHOT"
+    val appVersion      = "0.2.5-SNAPSHOT"
 
   lazy val root = Project("root", base = file("."))
     .dependsOn(plugin)
     .aggregate(scalaSample, javaSample)
 
   lazy val plugin = Project(appName, base = file("plugin")).settings(
+      scalaVersion := "2.10.0-RC1",
+      // RCs are not binary compatible with the final version
+//      scalaBinaryVersion := "2.10.0-RC5",
+      crossScalaVersions := Seq("2.10.0-RC1"),
+      resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       libraryDependencies += "spy" % "spymemcached" % "2.6",
-      libraryDependencies += "play" %% "play" % "2.0",
+      libraryDependencies += "play" %% "play" % "2.1-RC1" cross CrossVersion.binary,
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -48,11 +53,15 @@ object ApplicationBuild extends Build {
         )
     )
 
-    lazy val scalaSample = PlayProject("scala-sample", path = file("samples/scala"), mainLang = SCALA).settings(
+    lazy val scalaSample = play.Project("scala-sample", path = file("samples/scala")).settings(
+      scalaVersion := "2.10.0-RC1",
+      crossScalaVersions := Seq("2.10.0-RC1"),
       parallelExecution in Test := false
     ).dependsOn(plugin)
 
-    lazy val javaSample = PlayProject("java-sample", path = file("samples/java"), mainLang = JAVA).settings(
+    lazy val javaSample = play.Project("java-sample", path = file("samples/java")).settings(
+      scalaVersion := "2.10.0-RC1",
+      crossScalaVersions := Seq("2.10.0-RC1"),
       parallelExecution in Test := false
     ).dependsOn(plugin)
 

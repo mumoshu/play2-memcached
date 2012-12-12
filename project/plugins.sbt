@@ -8,7 +8,8 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 
 // Use the Play sbt plugin for Play projects
 // addSbtPlugin("play" % "sbt-plugin" % "2.0")
-libraryDependencies += Defaults.sbtPluginExtra("play" %% "sbt-plugin" % "2.0", "0.11.2", "2.9.1")
+//libraryDependencies += Defaults.sbtPluginExtra("play" %% "sbt-plugin" % "2.0", "0.11.2", "2.9.1")
+addSbtPlugin("play" % "sbt-plugin" % "2.1-RC1")
 
 resolvers += "Spy Repository" at "http://files.couchbase.com/maven2"
 
