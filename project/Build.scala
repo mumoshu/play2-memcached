@@ -61,7 +61,12 @@ object ApplicationBuild extends Build {
     lazy val scalaSample = play.Project(
       "scala-sample",
       path = file("samples/scala")
-    ).settings(baseSettings: _*).dependsOn(plugin)
+    ).settings(
+      scalaVersion := "2.10.0-RC1",
+      crossScalaVersions := Seq("2.10.0-RC1"),
+      crossVersion := CrossVersion.full,
+      parallelExecution in Test := false
+    ).dependsOn(plugin)
 
     lazy val javaSample = play.Project(
       "java-sample",
