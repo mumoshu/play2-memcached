@@ -4,11 +4,11 @@ import Keys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.2.5-SNAPSHOT"
+  val appVersion      = "0.2.5-RC1-SNAPSHOT"
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
-    scalaVersion := "2.10.0-RC1",
-    crossScalaVersions := Seq("2.10.0-RC1"),
+    scalaVersion := "2.10.0",
+    crossScalaVersions := Seq("2.10.0"),
     crossVersion := CrossVersion.full,
     parallelExecution in Test := false
   )
@@ -24,7 +24,7 @@ object ApplicationBuild extends Build {
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       scalaBinaryVersion <<= scalaVersion, // ここを指定するべきなのか微妙
       libraryDependencies += "spy" % "spymemcached" % "2.6",
-      libraryDependencies += "play" % "play_2.10" % "2.1-RC1",
+      libraryDependencies += "play" % "play_2.10" % "2.1-RC2",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -62,8 +62,8 @@ object ApplicationBuild extends Build {
       "scala-sample",
       path = file("samples/scala")
     ).settings(
-      scalaVersion := "2.10.0-RC1",
-      crossScalaVersions := Seq("2.10.0-RC1"),
+      scalaVersion := "2.10.0",
+      crossScalaVersions := Seq("2.10.0"),
       crossVersion := CrossVersion.full,
       parallelExecution in Test := false
     ).dependsOn(plugin)
