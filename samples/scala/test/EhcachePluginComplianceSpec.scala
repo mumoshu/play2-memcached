@@ -67,6 +67,15 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
         api.get(key) must be some (value)
       }
     }
+
+    "remove keys" in new cacheImpls {
+      both { api =>
+        api.set(key, "value", 0)
+        api.get(key) must be some ("value")
+        api.remove(key)
+        api.get(key) must be none
+      }
+    }
   }
 
   "Ehcache implementations of Cache API" should {
