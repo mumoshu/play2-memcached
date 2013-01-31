@@ -2,7 +2,7 @@ import com.github.mumoshu.play2.memcached.MemcachedPlugin
 import java.io.{PrintWriter, BufferedReader, InputStreamReader}
 import java.net.Socket
 import org.specs2.mutable._
-import org.specs2.execute.Result
+import org.specs2.execute.{AsResult, Result}
 import org.specs2.specification.Scope
 import play.api.cache.Cache
 import play.api.Play.current
@@ -24,7 +24,7 @@ object MemcachedIntegrationSpec extends Specification {
     val value = "value"
     val expiration = 1000
 
-    override def around[T <% Result](t: => T): Result = {
+    def around[T](t: => T)(implicit a: AsResult[T]) = a.asResult {
       running(TestServer(3333, FakeApplication(additionalConfiguration = additionalConfiguration))) {
         t
       }

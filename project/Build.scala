@@ -1,14 +1,19 @@
 import sbt._
 import Keys._
+import play.Project._
 
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.2.5-RC1-SNAPSHOT"
+  val appVersion      = "0.2.5-RC2-SNAPSHOT"
+  val appScalaVersion = "2.10.0"
+  val appScalaBinaryVersion = "2.10"
+  val appScalaCrossVersions = Seq("2.10.0")
 
   lazy val baseSettings = Defaults.defaultSettings ++ Seq(
-    scalaVersion := "2.10.0",
-    crossScalaVersions := Seq("2.10.0"),
+    scalaVersion := appScalaVersion,
+    scalaBinaryVersion := appScalaBinaryVersion,
+    crossScalaVersions := appScalaCrossVersions,
     crossVersion := CrossVersion.full,
     parallelExecution in Test := false
   )
@@ -22,9 +27,8 @@ object ApplicationBuild extends Build {
     .settings(
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
-      scalaBinaryVersion <<= scalaVersion, // ここを指定するべきなのか微妙
       libraryDependencies += "spy" % "spymemcached" % "2.6",
-      libraryDependencies += "play" % "play_2.10" % "2.1-RC2",
+      libraryDependencies += "play" % "play_2.10" % "2.1-RC3",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -62,8 +66,9 @@ object ApplicationBuild extends Build {
       "scala-sample",
       path = file("samples/scala")
     ).settings(
-      scalaVersion := "2.10.0",
-      crossScalaVersions := Seq("2.10.0"),
+      scalaVersion := appScalaVersion,
+      scalaBinaryVersion := appScalaBinaryVersion,
+      crossScalaVersions := appScalaCrossVersions,
       crossVersion := CrossVersion.full,
       parallelExecution in Test := false
     ).dependsOn(plugin)
