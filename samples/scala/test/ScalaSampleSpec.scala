@@ -21,7 +21,7 @@ object ScalaSampleSpec extends Specification {
       block
     }
 
-  def c(url: String): String = contentAsString(routeAndCall(FakeRequest(GET, url)).get)
+  def c(url: String): String = contentAsString(route(FakeRequest(GET, url)).get)
 
   "The scala sample application" should {
 

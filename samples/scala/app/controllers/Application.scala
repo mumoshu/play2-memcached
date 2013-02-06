@@ -4,69 +4,11 @@ import play.api._
 import play.api.mvc._
 import play.api.Play.current
 import cache.Cache
-import java.util.UUID
 
 object Application extends Controller {
   
-  def ActionUsingSession(f: => PlainResult): Action[AnyContent] = {
-    ActionUsingSession { request => f }
-  }
-  
-  def ActionUsingSession(f: Request[AnyContent] => PlainResult): Action[AnyContent] = {
-    ActionUsingSession[AnyContent](parse.anyContent)(f)
-  }
 
-  def ActionUsingSession[A](bp: BodyParser[A])(f: Request[A] => PlainResult): Action[A] = {
-    Action(bp) { request: Request[A] =>
-
-      // セッションの有効期間。発行から１時間にします。Play1系ではapplication.confで指定可能で、デフォルトは1時間となっています。
-      val maxAge = 3600 * 1000
-
-      // セッションIDや有効期限のキーはPlay 1系に倣ってみます。
-      val ID_KEY = "___ID"
-      val TS_KEY = "___TS"
-      
-      def newId = UUID.randomUUID().toString
-      def newTimestamp = (System.currentTimeMillis() + maxAge).toString
-      
-      val sessionData = request.session.get("___TS").map(_.toLong) match {
-        case Some(timestamp) if timestamp < System.currentTimeMillis() =>
-          Logger.info("セッションが期限切れしているので、生成しなおします。")
-          Map(
-            ID_KEY -> newId,
-            TS_KEY -> newTimestamp
-          )
-        case _ =>
-          Logger.info("セッションを生成または延長します。")
-          request.session.data ++ Map(
-            ID_KEY -> request.session.get(ID_KEY).getOrElse(newId),
-            TS_KEY -> newTimestamp
-          )
-      }
-
-      val result = f(new Request[A] {
-        def headers = request.headers
-        def method = request.method
-        def path = request.path
-        def queryString = request.queryString
-        def uri = request.uri
-        def body = request.body
-
-        override lazy val session = Session(sessionData)
-      })
-      
-      val cookies = result.header.headers.get(SET_COOKIE).map(Cookies.decode).getOrElse(Seq.empty)
-      
-      val sessionDataModifiedByAction = cookies.collectFirst {
-        case cookie @ Cookie(Session.COOKIE_NAME, value, maxAge, path, domain, secure, httpOnly) =>
-          sessionData ++ Session.decodeFromCookie(Some(cookie)).data
-      }
-      
-      result.withSession(Session(sessionDataModifiedByAction.getOrElse(sessionData)))
-    }
-  }
-  
-  def index = ActionUsingSession {
+  def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
   
