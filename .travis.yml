@@ -1,6 +1,6 @@
 language: scala
 scala:
-  - 2.10.0-RC1
+  - 2.10.0
 services:
   - memcache
 jdk:
