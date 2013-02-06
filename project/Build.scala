@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.2.5-RC2-SNAPSHOT"
+  val appVersion      = "0.3.0"
   val appScalaVersion = "2.10.0"
   val appScalaBinaryVersion = "2.10"
   val appScalaCrossVersions = Seq("2.10.0")
@@ -14,21 +14,23 @@ object ApplicationBuild extends Build {
     scalaVersion := appScalaVersion,
     scalaBinaryVersion := appScalaBinaryVersion,
     crossScalaVersions := appScalaCrossVersions,
-    crossVersion := CrossVersion.full,
     parallelExecution in Test := false
   )
 
   lazy val root = Project("root", base = file("."))
     .settings(baseSettings: _*)
-    .aggregate(plugin, scalaSample, javaSample)
+    .settings(
+      publishLocal := {},
+      publish := {}
+    ).aggregate(plugin, scalaSample, javaSample)
 
   lazy val plugin = Project(appName, base = file("plugin"))
     .settings(baseSettings: _*)
     .settings(
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
-      libraryDependencies += "spy" % "spymemcached" % "2.6",
-      libraryDependencies += "play" % "play_2.10" % "2.1-RC3",
+      libraryDependencies += "spy" % "spymemcached" % "2.8.4",
+      libraryDependencies += "play" %% "play" % "2.1.0" % "provided",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -70,12 +72,17 @@ object ApplicationBuild extends Build {
       scalaBinaryVersion := appScalaBinaryVersion,
       crossScalaVersions := appScalaCrossVersions,
       crossVersion := CrossVersion.full,
-      parallelExecution in Test := false
+      parallelExecution in Test := false,
+      publishLocal := {},
+      publish := {}
     ).dependsOn(plugin)
 
     lazy val javaSample = play.Project(
       "java-sample",
       path = file("samples/java")
-    ).settings(baseSettings: _*).dependsOn(plugin)
+    ).settings(baseSettings: _*).settings(
+      publishLocal := {},
+      publish := {}
+    ).dependsOn(plugin)
 
 }
