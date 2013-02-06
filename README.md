@@ -8,11 +8,25 @@ Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
 
 Add the following dependency to your Play project:
 
+For Play 2.1.0:
+
 ```scala
   val appDependencies = Seq(
     "com.github.mumoshu" %% "play2-memcached" % "0.3.0"
   )
   val main = play.Project(appName, appVersion, appDependencies).settings(
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
+  )
+```
+
+For Play 2.0:
+
+```scala
+  val appDependencies = Seq(
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.3-SNAPSHOT"
+  )
+  val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
+    resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
     resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
   )
 ```
@@ -119,7 +133,7 @@ To enable namespacing, configure it in "application.conf":
 
 0.2.4 Introduced "namespace" to prefix every key to put/get/remove with a global namespace configured in "application.conf"
 
-0.3.0 Built for Play 2.1.0 and available in the Maven Central
+0.3.0 Built for Play 2.1.0 and available in the Maven Central. Also updated spymemcached to 2.8.4.
 
 ### Acknowledgement
 
