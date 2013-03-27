@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.3.0"
+  val appVersion      = "0.3.0.1"
   val appScalaVersion = "2.10.0"
   val appScalaBinaryVersion = "2.10"
   val appScalaCrossVersions = Seq("2.10.0")
@@ -29,7 +29,7 @@ object ApplicationBuild extends Build {
     .settings(
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
-      libraryDependencies += "spy" % "spymemcached" % "2.8.4",
+      libraryDependencies += "spy" % "spymemcached" % "2.8.12",
       libraryDependencies += "play" %% "play" % "2.1.0" % "provided",
       organization := "com.github.mumoshu",
       version := appVersion,
