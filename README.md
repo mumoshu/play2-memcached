@@ -8,9 +8,11 @@ Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
 
 Add the following dependency to your Play project:
 
+(For Play 2.0.x)
+
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.2.3-SNAPSHOT"
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.4.1"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "Sonatype OSS Snapshots Repository" at "http://oss.sonatype.org/content/groups/public",
@@ -119,6 +121,8 @@ To enable namespacing, configure it in "application.conf":
 0.2.3 Allow removing keys in both Java and Scala ways described in Play's documentation. See MemcachedIntegrationSpec.scala for how to remove keys in Scala.
 
 0.2.4 Introduced "namespace" to prefix every key to put/get/remove with a global namespace configured in "application.conf"
+
+0.2.4.1 Updated spymemcached to 2.8.12
 
 ### Acknowledgement
 
