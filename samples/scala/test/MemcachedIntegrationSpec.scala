@@ -11,20 +11,15 @@ import play.api.test.Helpers._
 
 package memcached_integratin_spec {
 
-  case class Foo(value: Option[Int]) extends Externalizable {
+  case class Foo(var value: Option[Int]) extends Externalizable {
     def this() = this(None)
-    def readExternal(p1: ObjectInput) {
-      val readValue = try {
+    override def readExternal(p1: ObjectInput) {
+      val readValue =
         Some(p1.readInt())
-      } catch {
-        case e: EOFException =>
-          // your own logging here
-          None
-      }
-      new Foo(readValue)
+      this.value = readValue
     }
 
-    def writeExternal(p1: ObjectOutput) {
+    override def writeExternal(p1: ObjectOutput) {
       value.foreach(p1.writeInt)
     }
   }
@@ -144,7 +139,7 @@ object MemcachedIntegrationSpec extends Specification {
     }
 
     "get/set objects with custom serialization/deserialization" in new context {
-      val foo = new memcached_integratin_spec.Foo(Some(1))
+      val foo = new memcached_integratin_spec.Foo(Some(2))
       Cache.set("key", foo)
       Cache.get("key") must beEqualTo (Some(foo))
     }
