@@ -1,5 +1,5 @@
 import com.github.mumoshu.play2.memcached.MemcachedPlugin
-import java.io.{PrintWriter, BufferedReader, InputStreamReader}
+import java.io._
 import java.net.Socket
 import org.specs2.mutable._
 import org.specs2.execute.{AsResult, Result}
@@ -8,6 +8,22 @@ import play.api.cache.Cache
 import play.api.Play.current
 import play.api.test.{FakeApplication, TestServer}
 import play.api.test.Helpers._
+
+package memcached_integratin_spec {
+
+  case class Foo(var value: Option[Int]) extends Externalizable {
+    def this() = this(None)
+    override def readExternal(p1: ObjectInput) {
+      // your custom exception handling strategy here
+      this.value = Some(p1.readInt())
+    }
+
+    override def writeExternal(p1: ObjectOutput) {
+      value.foreach(p1.writeInt)
+    }
+  }
+
+}
 
 object MemcachedIntegrationSpec extends Specification {
 
@@ -119,6 +135,12 @@ object MemcachedIntegrationSpec extends Specification {
       Cache.get(key) must be some("foo")
 
       getValueLengthViaSocket("mikoto." + key) must be some(3)
+    }
+
+    "get/set objects with custom serialization/deserialization" in new context {
+      val foo = new memcached_integratin_spec.Foo(Some(2))
+      Cache.set("key", foo)
+      Cache.get("key") must beEqualTo (Some(foo))
     }
   }
 
