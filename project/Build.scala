@@ -29,7 +29,7 @@ object ApplicationBuild extends Build {
     .settings(
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
-      libraryDependencies += "spy" % "spymemcached" % "2.8.12",
+      libraryDependencies += "spy" % "spymemcached" % "2.8.9",
       libraryDependencies += "play" %% "play" % "2.1.0" % "provided",
       organization := "com.github.mumoshu",
       version := appVersion,
