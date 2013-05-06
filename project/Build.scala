@@ -5,7 +5,7 @@ import play.Project._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.3.0.1"
+  val appVersion      = "0.3.0.2"
   val appScalaVersion = "2.10.0"
   val appScalaBinaryVersion = "2.10"
   val appScalaCrossVersions = Seq("2.10.0")

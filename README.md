@@ -2,7 +2,7 @@ Memcached Plugin for Play framework 2.0
 ---------------------------------------
 
 An implementation of CacheAPI for Play 2.1-RC3 final.
-Using spymemcached 2.6 internally, which is the same as Play 1.2.4.
+Using spymemcached internally, which is the same as Play 1.x
 
 ## Usage
 
@@ -12,7 +12,7 @@ For Play 2.1.0:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.3.0.1"
+    "com.github.mumoshu" %% "play2-memcached" % "0.3.0.2"
   )
   val main = play.Project(appName, appVersion, appDependencies).settings(
     resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -137,6 +137,8 @@ To enable namespacing, configure it in "application.conf":
 0.3.0 Built for Play 2.1.0 and available in the Maven Central. Also updated spymemcached to 2.8.4.
 
 0.3.0.1 Updated spymemcached to 2.8.12
+
+0.3.0.2 Reverted spymemcached to 2.8.9 to deal with authentication failures to various memcache servers caused by spymemcached 2.8.10+. See #17 and #20 for details.
 
 ### Acknowledgement
 
