@@ -37,35 +37,38 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   lazy val client = {
     System.setProperty("net.spy.log.LoggerImpl", "com.github.mumoshu.play2.memcached.Slf4JLogger")
 
-    lazy val singleHost = app.configuration.getString("memcached.host").map(AddrUtil.getAddresses)
-    lazy val multipleHosts = app.configuration.getString("memcached.1.host").map { _ =>
-      def accumulate(nb: Int): String = {
-        app.configuration.getString("memcached." + nb + ".host").map { h => h + " " + accumulate(nb + 1) }.getOrElse("")
-      }
-      AddrUtil.getAddresses(accumulate(1))
-    }
-
-    val addrs = singleHost.orElse(multipleHosts)
-      .getOrElse(throw new RuntimeException("Bad configuration for memcached: missing host(s)"))
-
-    app.configuration.getString("memcached.user").map { memcacheUser =>
-      val memcachePassword = app.configuration.getString("memcached.password").getOrElse {
-        throw new RuntimeException("Bad configuration for memcached: missing password")
-      }
-
-      // Use plain SASL to connect to memcached
-      val ad = new AuthDescriptor(Array("PLAIN"),
-        new PlainCallbackHandler(memcacheUser, memcachePassword))
-      val cf = new ConnectionFactoryBuilder()
-        .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
-        .setAuthDescriptor(ad)
-        .build()
-
-      new MemcachedClient(cf, addrs)
+    app.configuration.getString("elasticache.config.endpoint").map { endpoint =>
+      new MemcachedClient(AddrUtil.getAddresses(endpoint))
     }.getOrElse {
-      new MemcachedClient(addrs)
-    }
+      lazy val singleHost = app.configuration.getString("memcached.host").map(AddrUtil.getAddresses)
+      lazy val multipleHosts = app.configuration.getString("memcached.1.host").map { _ =>
+        def accumulate(nb: Int): String = {
+          app.configuration.getString("memcached." + nb + ".host").map { h => h + " " + accumulate(nb + 1) }.getOrElse("")
+        }
+        AddrUtil.getAddresses(accumulate(1))
+      }
 
+      val addrs = singleHost.orElse(multipleHosts)
+        .getOrElse(throw new RuntimeException("Bad configuration for memcached: missing host(s)"))
+
+      app.configuration.getString("memcached.user").map { memcacheUser =>
+        val memcachePassword = app.configuration.getString("memcached.password").getOrElse {
+          throw new RuntimeException("Bad configuration for memcached: missing password")
+        }
+
+        // Use plain SASL to connect to memcached
+        val ad = new AuthDescriptor(Array("PLAIN"),
+          new PlainCallbackHandler(memcacheUser, memcachePassword))
+        val cf = new ConnectionFactoryBuilder()
+          .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
+          .setAuthDescriptor(ad)
+          .build()
+
+        new MemcachedClient(cf, addrs)
+      }.getOrElse {
+        new MemcachedClient(addrs)
+      }
+    }
   }
 
   import java.io._
@@ -118,7 +121,7 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
           }
         )
       } catch {
-        case e =>
+        case e: Throwable =>
           logger.error("An error has occured while getting the value from memcached" , e)
           future.cancel(false)
           None
