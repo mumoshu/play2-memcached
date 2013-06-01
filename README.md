@@ -124,6 +124,8 @@ To enable namespacing, configure it in "application.conf":
 
 0.2.4.1 Updated spymemcached to 2.8.12
 
+0.2.4.2 (For Play 2.0.x) Reverted spymemcached to 2.8.9 to deal with authentication failures to various memcache servers caused by spymemcached 2.8.10+. See #17 and #20 for details.
+
 ### Acknowledgement
 
 Thanks to gakuzzzz for the original idea of "namespacing" and the initial pull request for it.

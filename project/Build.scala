@@ -5,7 +5,7 @@ import PlayProject._
 object ApplicationBuild extends Build {
 
     val appName         = "play2-memcached"
-    val appVersion      = "0.2.4.1"
+    val appVersion      = "0.2.4.2"
 
   lazy val root = Project("root", base = file("."))
     .dependsOn(plugin)
@@ -13,7 +13,7 @@ object ApplicationBuild extends Build {
 
   lazy val plugin = Project(appName, base = file("plugin")).settings(
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
-      libraryDependencies += "spy" % "spymemcached" % "2.8.12",
+      libraryDependencies += "spy" % "spymemcached" % "2.8.9",
       libraryDependencies += "play" %% "play" % "2.0",
       organization := "com.github.mumoshu",
       version := appVersion,
