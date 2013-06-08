@@ -23,7 +23,7 @@ For Play 2.0:
 
 ```scala
   val appDependencies = Seq(
-    "com.github.mumoshu" %% "play2-memcached" % "0.2.4.1"
+    "com.github.mumoshu" %% "play2-memcached" % "0.2.4.3"
   )
   val main = PlayProject(appName, appVersion, appDependencies, mainLang = SCALA).settings(
     resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -139,6 +139,8 @@ To enable namespacing, configure it in "application.conf":
 0.3.0.1 Updated spymemcached to 2.8.12
 
 0.3.0.2 Reverted spymemcached to 2.8.9 to deal with authentication failures to various memcache servers caused by spymemcached 2.8.10+. See #17 and #20 for details.
+
+0.3.0.3 Updated spymemcached to 2.9.0 which solves the authentication issues.
 
 ### Acknowledgement
 
