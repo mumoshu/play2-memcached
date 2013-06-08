@@ -12,7 +12,6 @@ object ScalaSampleSpec extends Specification {
       FakeApplication(
         additionalConfiguration = Map(
           "ehcacheplugin" -> "disabled",
-          "memcached.host" -> "127.0.0.1:11211",
           "logger.memcached.plugin" -> "DEBUG"
         )
       )

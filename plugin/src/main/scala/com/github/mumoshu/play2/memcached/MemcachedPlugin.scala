@@ -13,7 +13,9 @@ import net.spy.memcached.compat.log.{Level, AbstractLogger}
 class Slf4JLogger(name: String) extends AbstractLogger(name) {
 
   val logger = Logger("memcached")
-  
+
+  def isTraceEnabled = logger.isTraceEnabled
+
   def isDebugEnabled = logger.isDebugEnabled
 
   def isInfoEnabled = logger.isInfoEnabled
@@ -21,6 +23,7 @@ class Slf4JLogger(name: String) extends AbstractLogger(name) {
   def log(level: Level, msg: AnyRef, throwable: Throwable) {
     val message = msg.toString
     level match {
+      case Level.TRACE => logger.trace(message, throwable)
       case Level.DEBUG => logger.debug(message, throwable)
       case Level.INFO => logger.info(message, throwable)
       case Level.WARN => logger.warn(message, throwable)
