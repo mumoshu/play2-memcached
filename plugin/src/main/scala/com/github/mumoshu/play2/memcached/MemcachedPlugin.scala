@@ -103,7 +103,7 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
       logger.debug("Getting the cached for key " + namespace + key)
       val future = client.asyncGet(namespace + key, tc)
       try {
-        val any = future.get(1, TimeUnit.SECONDS)
+        val any = future.get(timeout, timeunit)
         if (any != null) {
           logger.debug("any is " + any.getClass)
         }
@@ -138,6 +138,19 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   }
   
   lazy val namespace: String = app.configuration.getString("memcached.namespace").getOrElse("")
+
+  lazy val timeout: Int = app.configuration.getInt("memcached.timeout").getOrElse(1)
+
+  lazy val timeunit: TimeUnit = {
+    app.configuration.getString("memcached.timeunit").getOrElse("seconds") match {
+      case "seconds" => TimeUnit.SECONDS
+      case "milliseconds" => TimeUnit.MILLISECONDS 
+      case "microseconds" => TimeUnit.MICROSECONDS
+      case "nanoseconds" => TimeUnit.NANOSECONDS
+      case _ => TimeUnit.SECONDS
+    }
+  }
+
 
   /**
    * Is this plugin enabled.
