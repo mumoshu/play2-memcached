@@ -76,6 +76,12 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
         api.get(key) must be none
       }
     }
+
+    "returns None when getting value for empty key" in new cacheImpls {
+      both { api =>
+        api.get("") must be none
+      }
+    }
   }
 
   "Ehcache implementations of Cache API" should {
