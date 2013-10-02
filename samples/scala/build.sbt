@@ -1,4 +1,4 @@
-import PlayProject._
+import play.Project._
 
 name := "play2-memcached-scala-sample"
 
