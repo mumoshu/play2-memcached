@@ -155,7 +155,7 @@ and put it under `/lib`.
 Remove the SBT dependency on spymemcached by excluding it from play2-mamcached's transitive dependencies:
 
 ```
-  "com.github.mumoshu" %% "play2-memcached" % "0.5.0-RC1 exclude(net.spy", "spymemcached")
+  "com.github.mumoshu" %% "play2-memcached" % "0.5.0-RC1 exclude("net.spy", "spymemcached")
 ```
 
 Configure your configuration endpoint in `application.conf`:
