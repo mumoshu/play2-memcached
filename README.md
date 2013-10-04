@@ -13,7 +13,7 @@ For Play 2.2.0:
 ```scala
   val appDependencies = Seq(
     cache, // or play.Project.cache if not imported play.Project._
-    "com.github.mumoshu" %% "play2-memcached" % "0.4.0"
+    "com.github.mumoshu" %% "play2-memcached" % "0.4.0" // or 0.5.0-RC1 to try the latest improvements
   )
   val main = play.Project(appName, appVersion, appDependencies).settings(
     resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
@@ -137,6 +137,33 @@ To enable namespacing, configure it in "application.conf":
   memcached.namespace=mikoto.
 ```
 
+### Configuring timeouts
+
+You can specify timeouts for obtaining values from Memcached.
+
+```
+  # Timeout in 1 second
+  memcached.timeout=1
+```
+
+### Using ElastiCache's Auto-Discovery feature
+
+At first, download the latest `AmazonElastiCacheClusterClient-*.jar` from the AWS console,
+or build it yourself as described in [The Amazon ElastiCache Cluster Client page in GitHub](https://github.com/amazonwebservices/aws-elasticache-cluster-client-memcached-for-java),
+and put it under `/lib`.
+
+Remove the SBT dependency on spymemcached by excluding it from play2-mamcached's transitive dependencies:
+
+```
+  "com.github.mumoshu" %% "play2-memcached" % "0.5.0-RC1 exclude(net.spy", "spymemcached")
+```
+
+Configure your configuration endpoint in `application.conf`:
+
+```
+  elasticache.config.endpoint="mycachename.asdfjk.cfg.use1.cache.amazonaws.com:11211".
+```
+
 ### Version history
 
 0.2.2 Fixed the logging leak issue. You don't get a bunch of INFO messages to play app's default logger anymore.
@@ -159,9 +186,19 @@ To enable namespacing, configure it in "application.conf":
 
 0.4.0 Build for Play 2.2.0
 
+0.5.0-RC1 Improvements:
+  #14 Adding support for Amazon Elasticache (thanks to @kamatsuoka)
+  #23 Adding configurable timeouts on the future (thanks to @rmmeans)
+  #24 Empty keys - kind of ehcache compilance, avoiding IllegalArgumentExceptions (thanks to @mkubala)
+
 ### Acknowledgement
 
-Thanks to gakuzzzz for the original idea of "namespacing" and the initial pull request for it.
+Thanks to:
+@gakuzzzz for the original idea of "namespacing" and the initial pull request for it.
+@kamatsuoka for adding support for Amazon Elasticache.
+@rmmeans for adding configurable timeouts on the future.
+@mkubala for improving compliance with EhCache.
+
 
 ## Build status
 
