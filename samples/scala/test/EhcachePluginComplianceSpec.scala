@@ -106,9 +106,6 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
     "store value for empty key" in new cacheImpls {
       ehcache.set("", "aa", 0)
-      ehcache.get("") must be some ("aa")
-
-      ehcache.remove("")
       ehcache.get("") must be none
     }
   }
