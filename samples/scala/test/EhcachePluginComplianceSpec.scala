@@ -76,6 +76,12 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
         api.get(key) must be none
       }
     }
+
+    "returns None when getting value for empty key" in new cacheImpls {
+      both { api =>
+        api.get("") must be none
+      }
+    }
   }
 
   "Ehcache implementations of Cache API" should {
@@ -97,6 +103,14 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
       ehcache.get(key) must be equalTo None
     }
+
+    "store value for empty key" in new cacheImpls {
+      ehcache.set("", "aa", 0)
+      ehcache.get("") must be some ("aa")
+
+      ehcache.remove("")
+      ehcache.get("") must be none
+    }
   }
 
   "Memcached implementation of CacheAPI" should {
@@ -112,6 +126,14 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
       memcache.set(key, null, 0)
 
       memcache.get(key) must be none
+    }
+
+    "not store value for empty key" in new cacheImpls {
+      memcache.set("", "aa", 0)
+      memcache.get("") must be none
+
+      memcache.remove("")
+      memcache.get("") must be none
     }
   }
 

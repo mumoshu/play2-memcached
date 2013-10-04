@@ -40,35 +40,38 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
   lazy val client = {
     System.setProperty("net.spy.log.LoggerImpl", "com.github.mumoshu.play2.memcached.Slf4JLogger")
 
-    lazy val singleHost = app.configuration.getString("memcached.host").map(AddrUtil.getAddresses)
-    lazy val multipleHosts = app.configuration.getString("memcached.1.host").map { _ =>
-      def accumulate(nb: Int): String = {
-        app.configuration.getString("memcached." + nb + ".host").map { h => h + " " + accumulate(nb + 1) }.getOrElse("")
-      }
-      AddrUtil.getAddresses(accumulate(1))
-    }
-
-    val addrs = singleHost.orElse(multipleHosts)
-      .getOrElse(throw new RuntimeException("Bad configuration for memcached: missing host(s)"))
-
-    app.configuration.getString("memcached.user").map { memcacheUser =>
-      val memcachePassword = app.configuration.getString("memcached.password").getOrElse {
-        throw new RuntimeException("Bad configuration for memcached: missing password")
-      }
-
-      // Use plain SASL to connect to memcached
-      val ad = new AuthDescriptor(Array("PLAIN"),
-        new PlainCallbackHandler(memcacheUser, memcachePassword))
-      val cf = new ConnectionFactoryBuilder()
-        .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
-        .setAuthDescriptor(ad)
-        .build()
-
-      new MemcachedClient(cf, addrs)
+    app.configuration.getString("elasticache.config.endpoint").map { endpoint =>
+      new MemcachedClient(AddrUtil.getAddresses(endpoint))
     }.getOrElse {
-      new MemcachedClient(addrs)
-    }
+      lazy val singleHost = app.configuration.getString("memcached.host").map(AddrUtil.getAddresses)
+      lazy val multipleHosts = app.configuration.getString("memcached.1.host").map { _ =>
+        def accumulate(nb: Int): String = {
+          app.configuration.getString("memcached." + nb + ".host").map { h => h + " " + accumulate(nb + 1) }.getOrElse("")
+        }
+        AddrUtil.getAddresses(accumulate(1))
+      }
 
+      val addrs = singleHost.orElse(multipleHosts)
+        .getOrElse(throw new RuntimeException("Bad configuration for memcached: missing host(s)"))
+
+      app.configuration.getString("memcached.user").map { memcacheUser =>
+        val memcachePassword = app.configuration.getString("memcached.password").getOrElse {
+          throw new RuntimeException("Bad configuration for memcached: missing password")
+        }
+
+        // Use plain SASL to connect to memcached
+        val ad = new AuthDescriptor(Array("PLAIN"),
+          new PlainCallbackHandler(memcacheUser, memcachePassword))
+        val cf = new ConnectionFactoryBuilder()
+          .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
+          .setAuthDescriptor(ad)
+          .build()
+
+        new MemcachedClient(cf, addrs)
+      }.getOrElse {
+        new MemcachedClient(addrs)
+      }
+    }
   }
 
   import java.io._
@@ -99,45 +102,65 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
 
   lazy val api = new CacheAPI {
 
-    def get(key: String) = {
-      logger.debug("Getting the cached for key " + namespace + key)
-      val future = client.asyncGet(namespace + key, tc)
-      try {
-        val any = future.get(1, TimeUnit.SECONDS)
-        if (any != null) {
-          logger.debug("any is " + any.getClass)
-        }
-        Option(
-          any match {
-            case x: java.lang.Byte => x.byteValue()
-            case x: java.lang.Short => x.shortValue()
-            case x: java.lang.Integer => x.intValue()
-            case x: java.lang.Long => x.longValue()
-            case x: java.lang.Float => x.floatValue()
-            case x: java.lang.Double => x.doubleValue()
-            case x: java.lang.Character => x.charValue()
-            case x: java.lang.Boolean => x.booleanValue()
-            case x => x
+    def get(key: String) =
+    if (key.isEmpty) {
+      None
+    } else {
+        logger.debug("Getting the cached for key " + namespace + key)
+        val future = client.asyncGet(namespace + key, tc)
+        try {
+          val any = future.get(timeout, timeunit)
+          if (any != null) {
+            logger.debug("any is " + any.getClass)
           }
-        )
-      } catch {
-        case e =>
-          logger.error("An error has occured while getting the value from memcached" , e)
-          future.cancel(false)
-          None
-      }
+          Option(
+            any match {
+              case x: java.lang.Byte => x.byteValue()
+              case x: java.lang.Short => x.shortValue()
+              case x: java.lang.Integer => x.intValue()
+              case x: java.lang.Long => x.longValue()
+              case x: java.lang.Float => x.floatValue()
+              case x: java.lang.Double => x.doubleValue()
+              case x: java.lang.Character => x.charValue()
+              case x: java.lang.Boolean => x.booleanValue()
+              case x => x
+            }
+          )
+        } catch {
+          case e: Throwable =>
+            logger.error("An error has occured while getting the value from memcached" , e)
+            future.cancel(false)
+            None
+        }
     }
 
     def set(key: String, value: Any, expiration: Int) {
-      client.set(namespace + key, expiration, value, tc)
+      if (!key.isEmpty) {
+        client.set(namespace + key, expiration, value, tc)
+      }
     }
 
     def remove(key: String) {
-      client.delete(namespace + key)
+      if (!key.isEmpty) {
+        client.delete(namespace + key)
+      }
     }
   }
   
   lazy val namespace: String = app.configuration.getString("memcached.namespace").getOrElse("")
+
+  lazy val timeout: Int = app.configuration.getInt("memcached.timeout").getOrElse(1)
+
+  lazy val timeunit: TimeUnit = {
+    app.configuration.getString("memcached.timeunit").getOrElse("seconds") match {
+      case "seconds" => TimeUnit.SECONDS
+      case "milliseconds" => TimeUnit.MILLISECONDS 
+      case "microseconds" => TimeUnit.MICROSECONDS
+      case "nanoseconds" => TimeUnit.NANOSECONDS
+      case _ => TimeUnit.SECONDS
+    }
+  }
+
 
   /**
    * Is this plugin enabled.
