@@ -104,7 +104,7 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
       None
     } else {
         logger.debug("Getting the cached for key " + namespace + key)
-        val future = client.asyncGet(namespace + key, tc)
+        val future = client.asyncGet(namespace + hash(key), tc)
         try {
           val any = future.get(timeout, timeunit)
           if (any != null) {
@@ -133,13 +133,13 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
 
     def set(key: String, value: Any, expiration: Int) {
       if (!key.isEmpty) {
-        client.set(namespace + key, expiration, value, tc)
+        client.set(namespace + hash(key), expiration, value, tc)
       }
     }
 
     def remove(key: String) {
       if (!key.isEmpty) {
-        client.delete(namespace + key)
+        client.delete(namespace + hash(key))
       }
     }
   }
@@ -157,6 +157,12 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
       case _ => TimeUnit.SECONDS
     }
   }
+
+  lazy val hashkeys: String = app.configuration.getString("memcached.hashkeys").getOrElse("off")
+
+  // you may override hash implementation to use more sophisticated hashes, like xxHash for higher performance
+  protected def hash(key: String): String = if(hashkeys == "off") key
+    else java.security.MessageDigest.getInstance(hashkeys).digest(key.getBytes).map("%02x".format(_)).mkString
 
 
   /**
