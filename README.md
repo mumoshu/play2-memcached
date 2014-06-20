@@ -1,8 +1,8 @@
-Memcached Plugin for Play framework 2.0
+Memcached Plugin for Play framework 2.x
 ---------------------------------------
 
-An implementation of CacheAPI for Play 2.1-RC3 final.
-Using spymemcached internally, which is the same as Play 1.x
+A Memcached implementation of Cache API for Play 2.x.
+Using spymemcached internally, which is the same as Play 1.x's default Cache implementation.
 
 ## Usage
 
