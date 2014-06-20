@@ -4,5 +4,5 @@ scala:
 services:
   - memcache
 jdk:
-  - openjdk6
-  - oraclejdk6
+  - openjdk7
+  - oraclejdk7
