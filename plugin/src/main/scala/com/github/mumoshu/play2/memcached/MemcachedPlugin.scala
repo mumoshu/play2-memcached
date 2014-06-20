@@ -125,9 +125,14 @@ class MemcachedPlugin(app: Application) extends CachePlugin {
           )
         } catch {
           case e: Throwable =>
-            logger.error("An error has occured while getting the value from memcached" , e)
             future.cancel(false)
-            None
+            if (app.configuration.getBoolean("memcached.throwExceptionFromGetOnError").getOrElse(false)) {
+              throw e
+            }
+            else {
+              logger.error("An error has occured while getting the value from memcached" , e)
+              None
+            }
         }
     }
 
