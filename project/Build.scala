@@ -4,7 +4,7 @@ import Keys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.5.0-RC1"
+  val appVersion      = "0.6.0"
   val appScalaVersion = "2.10.4"
   val appScalaCrossVersions = appScalaVersion :: "2.11.1" :: Nil
 

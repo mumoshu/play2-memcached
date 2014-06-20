@@ -8,6 +8,21 @@ Using spymemcached internally, which is the same as Play 1.x
 
 Add the following dependency to your Play project:
 
+For Play 2.3.0:
+
+```scala
+  val appDependencies = Seq(
+    play.PlayImport.cache,
+    "com.github.mumoshu" %% "play2-memcached" % "0.6.0"
+  )
+  val main = Project(appName).enablePlugins(play.PlayScala).settings(
+    version := appVersion,
+    libraryDependencies ++= appDependencies,
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
+  )
+```
+
+
 For Play 2.2.0:
 
 ```scala
