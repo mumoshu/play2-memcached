@@ -4,7 +4,7 @@ import Keys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
-  val appVersion      = "0.6.0"
+  val appVersion      = "0.7.0"
   val appScalaVersion = "2.10.4"
   val appScalaCrossVersions = appScalaVersion :: "2.11.1" :: Nil
 
@@ -27,9 +27,12 @@ object ApplicationBuild extends Build {
       resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
       resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
+      resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies += "net.spy" % "spymemcached" % "2.9.0",
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
+      libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
+      libraryDependencies += "org.specs2" % "specs2_2.10" % "2.4.15" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -60,7 +63,14 @@ object ApplicationBuild extends Build {
               <url>https://github.com/mumoshu</url>
             </developer>
           </developers>
-        )
+        ),
+      unmanagedSourceDirectories in Compile <<= (unmanagedSourceDirectories in Compile, sourceDirectory in Compile) { (sds: Seq[java.io.File], sd: java.io.File) =>
+        val v = play.core.PlayVersion.current
+        val mainVersion = v.split("""\.""").take(2).mkString(".")
+        val versionSpecificSrc = new java.io.File(sd, "play_" + mainVersion)
+        val defaultSrc = new java.io.File(sd, "default")
+        (if (versionSpecificSrc.exists) Seq(versionSpecificSrc) else Seq(defaultSrc)) ++ sds
+      }
     )
 
     lazy val scalaSample = Project(
