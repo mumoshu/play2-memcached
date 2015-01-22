@@ -14,6 +14,14 @@ object ApplicationBuild extends Build {
     parallelExecution in Test := false
   )
 
+  def playVersionSpecificUnmanagedSourceDirectories(sds: Seq[java.io.File], sd: java.io.File) = {
+    val v = play.core.PlayVersion.current
+    val mainVersion = v.split("""\.""").take(2).mkString(".")
+    val versionSpecificSrc = new java.io.File(sd, "play_" + mainVersion)
+    val defaultSrc = new java.io.File(sd, "default")
+    (if (versionSpecificSrc.exists) Seq(versionSpecificSrc) else Seq(defaultSrc)) ++ sds
+  }
+
   lazy val root = Project("root", base = file("."))
     .settings(baseSettings: _*)
     .settings(
@@ -65,11 +73,10 @@ object ApplicationBuild extends Build {
           </developers>
         ),
       unmanagedSourceDirectories in Compile <<= (unmanagedSourceDirectories in Compile, sourceDirectory in Compile) { (sds: Seq[java.io.File], sd: java.io.File) =>
-        val v = play.core.PlayVersion.current
-        val mainVersion = v.split("""\.""").take(2).mkString(".")
-        val versionSpecificSrc = new java.io.File(sd, "play_" + mainVersion)
-        val defaultSrc = new java.io.File(sd, "default")
-        (if (versionSpecificSrc.exists) Seq(versionSpecificSrc) else Seq(defaultSrc)) ++ sds
+        playVersionSpecificUnmanagedSourceDirectories(sds, sd)
+      },
+      unmanagedSourceDirectories in Test <<= (unmanagedSourceDirectories in Test, sourceDirectory in Test) { (sds: Seq[java.io.File], sd: java.io.File) =>
+        playVersionSpecificUnmanagedSourceDirectories(sds, sd)
       }
     )
 
