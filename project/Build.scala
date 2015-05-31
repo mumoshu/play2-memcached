@@ -14,12 +14,19 @@ object ApplicationBuild extends Build {
     parallelExecution in Test := false
   )
 
-  def playVersionSpecificUnmanagedSourceDirectories(sds: Seq[java.io.File], sd: java.io.File) = {
+  def playMajorAndMinorVersion: String = {
     val v = play.core.PlayVersion.current
-    val mainVersion = v.split("""\.""").take(2).mkString(".")
-    val versionSpecificSrc = new java.io.File(sd, "play_" + mainVersion)
+    v.split("""\.""").take(2).mkString(".")
+  }
+
+  def playVersionSpecificSourceDirectoryUnder(sd: java.io.File): java.io.File = {
+    val versionSpecificSrc = new java.io.File(sd, "play_" + playMajorAndMinorVersion)
     val defaultSrc = new java.io.File(sd, "default")
-    (if (versionSpecificSrc.exists) Seq(versionSpecificSrc) else Seq(defaultSrc)) ++ sds
+    if (versionSpecificSrc.exists) versionSpecificSrc else defaultSrc
+  }
+
+  def playVersionSpecificUnmanagedSourceDirectories(sds: Seq[java.io.File], sd: java.io.File) = {
+    Seq(playVersionSpecificSourceDirectoryUnder(sd)) ++ sds
   }
 
   lazy val root = Project("root", base = file("."))
@@ -82,7 +89,7 @@ object ApplicationBuild extends Build {
 
     lazy val scalaSample = Project(
       "scala-sample",
-      file("samples/scala")
+      playVersionSpecificSourceDirectoryUnder(file("samples/scala"))
     ).enablePlugins(play.PlayScala).settings(
       resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
       libraryDependencies += play.PlayImport.cache,
@@ -95,7 +102,7 @@ object ApplicationBuild extends Build {
 
     lazy val javaSample = Project(
       "java-sample",
-      file("samples/java")
+      playVersionSpecificSourceDirectoryUnder(file("samples/java"))
     ).enablePlugins(play.PlayJava).settings(baseSettings: _*).settings(
       libraryDependencies += play.PlayImport.cache,
       publishLocal := {},
