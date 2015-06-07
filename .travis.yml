@@ -8,11 +8,11 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 env:
-  - PLAY_VERSION=2.4
+  - PLAY_VERSION=2.4.0
   - PLAY_VERSION=2.3.9
 matrix:
   exclude:
-    - env: PLAY_VERSION=2.4
+    - env: PLAY_VERSION=2.4.0
       jdk: oraclejdk7
   exclde:
     - env: PLAY_VERSION=2.3.9
