@@ -3,7 +3,7 @@ ivyLoggingLevel := UpdateLogging.Full
 // The Typesafe repository
 resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
 
-val playVersion = scala.util.Properties.envOrElse("PLAY_VERSION", "2.4.0-M2")
+val playVersion = scala.util.Properties.envOrElse("PLAY_VERSION", "2.4.0")
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % playVersion)
 

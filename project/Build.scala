@@ -5,8 +5,8 @@ object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
   val appVersion      = "0.7.0"
-  val appScalaVersion = "2.10.4"
-  val appScalaCrossVersions = appScalaVersion :: "2.11.1" :: Nil
+  val appScalaVersion = "2.10.5"
+  val appScalaCrossVersions = appScalaVersion :: "2.11.6" :: Nil
 
   lazy val baseSettings = Seq(
     scalaVersion := appScalaVersion,
@@ -17,6 +17,10 @@ object ApplicationBuild extends Build {
   def playMajorAndMinorVersion: String = {
     val v = play.core.PlayVersion.current
     v.split("""\.""").take(2).mkString(".")
+  }
+
+  def isPlay24: Boolean = {
+    playMajorAndMinorVersion == "2.4"
   }
 
   def playVersionSpecificSourceDirectoryUnder(sd: java.io.File): java.io.File = {
@@ -87,12 +91,20 @@ object ApplicationBuild extends Build {
       }
     )
 
+    def playCache: ModuleID = {
+      play.PlayImport.cache
+    }
+
+    def playScalaPlugin: AutoPlugin = {
+      play.PlayScala
+    }
+
     lazy val scalaSample = Project(
       "scala-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/scala"))
-    ).enablePlugins(play.PlayScala).settings(
+    ).enablePlugins(playScalaPlugin).settings(
       resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
-      libraryDependencies += play.PlayImport.cache,
+      libraryDependencies += playCache,
       scalaVersion := appScalaVersion,
       crossScalaVersions := appScalaCrossVersions,
       parallelExecution in Test := false,

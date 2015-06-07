@@ -1,9 +1,19 @@
 language: scala
 scala:
-  - 2.10.4
-  - 2.11.1
+  - 2.10.5
+  - 2.11.6
 services:
   - memcache
 jdk:
-  - openjdk6
   - oraclejdk7
+  - oraclejdk8
+env:
+  - PLAY_VERSION=2.4
+  - PLAY_VERSION=2.3.9
+matrix:
+  exclude:
+    - env: PLAY_VERSION=2.4
+      jdk: oraclejdk7
+  exclde:
+    - env: PLAY_VERSION=2.3.9
+      jdk: oraclejdk8

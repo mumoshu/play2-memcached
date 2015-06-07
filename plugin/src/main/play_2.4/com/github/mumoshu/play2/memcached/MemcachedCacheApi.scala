@@ -34,6 +34,8 @@ class MemcachedCacheApi @Inject() (val namespace: String, client: MemcachedClien
     if (key.isEmpty) {
       None
     } else {
+      val ct = implicitly[ClassTag[T]]
+
       logger.debug("Getting the cached for key " + namespace + key)
       val future = client.asyncGet(namespace + key, tc)
       try {
@@ -41,14 +43,17 @@ class MemcachedCacheApi @Inject() (val namespace: String, client: MemcachedClien
         if (any != null) {
           logger.debug("any is " + any.getClass)
         }
+
         Option(
           any match {
-            case x if implicitly[ClassTag[T]].runtimeClass.isInstance(x) => x.asInstanceOf[T]
+            case x if ct.runtimeClass.isInstance(x) => x.asInstanceOf[T]
+            case x if ct == ClassTag.Nothing => x.asInstanceOf[T]
+            case x => x.asInstanceOf[T]
           }
         )
       } catch {
         case e: Throwable =>
-          logger.error("An error has occured while getting the value from memcached" , e)
+          logger.error("An error has occured while getting the value from memcached. ct=" + ct , e)
           future.cancel(false)
           None
       }
@@ -64,13 +69,30 @@ class MemcachedCacheApi @Inject() (val namespace: String, client: MemcachedClien
 
   def set(key: String, value: Any, expiration: Duration = Duration.Inf) {
     if (!key.isEmpty) {
-      client.set(namespace + key, expiration.toSeconds.toInt, value, tc)
+      val exp = if (expiration.isFinite()) expiration.toSeconds.toInt else 0
+      client.set(namespace + key, exp, value, tc)
     }
   }
 
   def remove(key: String) {
     if (!key.isEmpty) {
       client.delete(namespace + key)
+    }
+  }
+}
+
+object MemcachedCacheApi {
+  object ValFromJavaObject {
+    def unapply(x: AnyRef): Option[AnyVal] = x match {
+      case x: java.lang.Byte => Some(x.byteValue())
+      case x: java.lang.Short => Some(x.shortValue())
+      case x: java.lang.Integer => Some(x.intValue())
+      case x: java.lang.Long => Some(x.longValue())
+      case x: java.lang.Float => Some(x.floatValue())
+      case x: java.lang.Double => Some(x.doubleValue())
+      case x: java.lang.Character => Some(x.charValue())
+      case x: java.lang.Boolean => Some(x.booleanValue())
+      case _ => None
     }
   }
 }
