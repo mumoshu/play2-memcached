@@ -5,12 +5,8 @@ object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached"
   val appVersion      = "0.7.0"
-  val appScalaVersion = "2.10.5"
-  val appScalaCrossVersions = appScalaVersion :: "2.11.6" :: Nil
 
   lazy val baseSettings = Seq(
-    scalaVersion := appScalaVersion,
-    crossScalaVersions := appScalaCrossVersions,
     parallelExecution in Test := false
   )
 
@@ -51,7 +47,7 @@ object ApplicationBuild extends Build {
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
-      libraryDependencies += "org.specs2" % "specs2_2.10" % "2.4.15" % "test",
+      libraryDependencies += "org.specs2" %% "specs2" % "2.4.15" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo <<= version { v: String =>
@@ -105,8 +101,6 @@ object ApplicationBuild extends Build {
     ).enablePlugins(playScalaPlugin).settings(
       resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
       libraryDependencies += playCache,
-      scalaVersion := appScalaVersion,
-      crossScalaVersions := appScalaCrossVersions,
       parallelExecution in Test := false,
       publishLocal := {},
       publish := {}
