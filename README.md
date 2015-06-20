@@ -8,12 +8,14 @@ Using spymemcached internally, which is the same as Play 1.x's default Cache imp
 
 Add the following dependency to your Play project:
 
-For Play 2.3.0:
+### Library dependencies
+
+For Play 2.4.x:
 
 ```scala
   val appDependencies = Seq(
     play.PlayImport.cache,
-    "com.github.mumoshu" %% "play2-memcached" % "0.6.0"
+    "com.github.mumoshu" %% "play2-memcached-play24" % "0.7.0"
   )
   val main = Project(appName).enablePlugins(play.PlayScala).settings(
     version := appVersion,
@@ -22,6 +24,19 @@ For Play 2.3.0:
   )
 ```
 
+For Play 2.3.x:
+
+```scala
+  val appDependencies = Seq(
+    play.PlayImport.cache,
+    "com.github.mumoshu" %% "play2-memcached-play23" % "0.7.0"
+  )
+  val main = Project(appName).enablePlugins(play.PlayScala).settings(
+    version := appVersion,
+    libraryDependencies ++= appDependencies,
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
+  )
+```
 
 For Play 2.2.0:
 
@@ -58,6 +73,26 @@ For Play 2.0:
   )
 ```
 
+### Configurations
+
+#### Play 2.4.x
+
+```
+play.modules.enabled+="com.github.mumoshu.play2.memcached.MemcachedModule"
+
+# To avoid conflict with play2-memcached's Memcached-based cache module
+play.modules.disabled+="play.api.cache.EhCacheModule"
+
+# Well-known configuration provided by Play
+play.modules.cache.defaultCache=default
+play.modules.cache.bindCaches=["db-cache", "user-cache", "session-cache"]
+
+# Tell play2-memcached where your memcached host is located at
+memcached.host="127.0.0.1:11211"
+```
+
+#### Play 2.3.x or below
+
 Add a reference to the plugin in `play.plugins` file.
 `play.plugins` file must be put somewhere in the classpath.
 My recommendation is to put it in `conf/` directory.
@@ -84,6 +119,8 @@ If you have multiple memcached instances over different host names or IP address
   memcached.1.host="mumocached1:11211"
   memcached.2.host="mumocached2:11211"
 ```
+
+### Code examples
 
 Then, you can use the `play.api.cache.Cache` object to store a value in memcached:
 
@@ -113,9 +150,9 @@ You can remove the value (It's not yet a part of Play 2.0's Cache API, though):
  play.api.Play.current.plugin[MemcachedPlugin].get.api.remove("keyToRemove")
 ```
 
-## Additional configurations
+### Advanced configurations
 
-### Disabling the plugin
+#### Disabling the plugin
 
 You can disable the plugin in a similar manner to Play's build-in Ehcache Plugin.
 To disable the plugin in `application.conf`:
@@ -124,7 +161,7 @@ To disable the plugin in `application.conf`:
   memcachedplugin=disabled
 ```
 
-### Authentication with SASL
+#### Authentication with SASL
 
 If you memcached requires the client an authentication with SASL, provide username/password like:
 
@@ -133,7 +170,7 @@ If you memcached requires the client an authentication with SASL, provide userna
   memcached.password=mikoto
 ```
 
-### Configure logging
+#### Configure logging
 
 By default, the plugin (or the spymemcached under the hood) does not output any logs at all.
 If you need to peek into what's going on, set the log level like:
@@ -142,7 +179,7 @@ If you need to peek into what's going on, set the log level like:
   logger.memcached=DEBUG
 ```
 
-### Namespacing
+#### Namespacing
 
 You can prefix every key to put/get/remove with a global namespace.
 By default, the namespace is an empty string, implying you don't use namespacing at all.
@@ -167,6 +204,8 @@ To enable namespacing, configure it in "application.conf":
 0.3.0.1 Updated spymemcached to 2.8.12
 
 0.3.0.2 Reverted spymemcached to 2.8.9 to deal with authentication failures to various memcache servers caused by spymemcached 2.8.10+. See #17 and #20 for details.
+
+0.7.0 Cross built for Play 2.3.x, 2.4.x, Scala 2.10.5 and 2.11.6. Artifact IDs are renamed to `play2-memcached-play2{3,4}_2.1{0,1}`
 
 ### Acknowledgement
 
