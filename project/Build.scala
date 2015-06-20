@@ -1,6 +1,8 @@
 import sbt._
 import Keys._
 
+import com.typesafe.sbt.pgp.PgpKeys._
+
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
@@ -39,7 +41,9 @@ object ApplicationBuild extends Build {
     .settings(baseSettings: _*)
     .settings(
       publishLocal := {},
-      publish := {}
+      publish := {},
+      publishLocalSigned := {},
+      publishSigned := {}
     ).aggregate(plugin, scalaSample, javaSample)
 
   lazy val plugin = Project(appName, base = file("plugin"))
@@ -105,11 +109,15 @@ object ApplicationBuild extends Build {
       "scala-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/scala"))
     ).enablePlugins(playScalaPlugin).settings(
+        playScalaPlugin.projectSettings: _*
+    ).settings(
       resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
       libraryDependencies += playCache,
       parallelExecution in Test := false,
       publishLocal := {},
-      publish := {}
+      publish := {},
+      publishLocalSigned := {},
+      publishSigned := {}
     ).dependsOn(plugin)
 
     lazy val javaSample = Project(
@@ -118,7 +126,9 @@ object ApplicationBuild extends Build {
     ).enablePlugins(play.PlayJava).settings(baseSettings: _*).settings(
       libraryDependencies += play.PlayImport.cache,
       publishLocal := {},
-      publish := {}
+      publish := {},
+      publishLocalSigned := {},
+      publishSigned := {}
     ).dependsOn(plugin)
 
 }
