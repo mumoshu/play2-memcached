@@ -1,8 +1,5 @@
 package com.github.mumoshu.play2.memcached
 
-import java.util.concurrent.TimeUnit
-
-import net.spy.memcached.transcoders.Transcoder
 import play.api.cache.{CacheApi, Cached, NamedCache}
 import play.api.{Configuration, Environment}
 import play.api.inject.{ BindingKey, Injector, ApplicationLifecycle, Module }
@@ -32,7 +29,7 @@ class MemcachedModule extends Module {
 
   import scala.collection.JavaConversions._
 
-  def bindings(environment: Environment, configuration: Configuration) = {
+  def bindings(environment: Environment, configuration: play.api.Configuration) = {
     val defaultCacheName = configuration.underlying.getString("play.modules.cache.defaultCache")
     val bindCaches = configuration.underlying.getStringList("play.modules.cache.bindCaches").toSeq
 

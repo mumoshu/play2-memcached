@@ -34,7 +34,7 @@ object ApplicationBuild extends Build {
   }
 
   def playVersionSpecificUnmanagedSourceDirectories(sds: Seq[java.io.File], sd: java.io.File) = {
-    Seq(playVersionSpecificSourceDirectoryUnder(sd)) ++ sds
+    Seq(playVersionSpecificSourceDirectoryUnder(sd), new java.io.File(sd, "core")) ++ sds
   }
 
   lazy val root = Project("root", base = file("."))

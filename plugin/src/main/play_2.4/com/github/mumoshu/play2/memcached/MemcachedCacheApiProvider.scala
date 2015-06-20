@@ -8,7 +8,7 @@ import javax.inject.{Inject, Singleton, Provider}
 import net.spy.memcached.MemcachedClient
 
 @Singleton
-class MemcachedCacheApiProvider(namespace: String, client: BindingKey[MemcachedClient], configuration: Configuration) extends Provider[MemcachedCacheApi] {
+class MemcachedCacheApiProvider(namespace: String, client: BindingKey[MemcachedClient], configuration: play.api.Configuration) extends Provider[MemcachedCacheApi] {
   @Inject private var injector: Injector = _
 
   lazy val get: MemcachedCacheApi = {
