@@ -19,7 +19,7 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
     val key = "ehcachePluginComplianceSpecKey"
     val expiration = 1000
 
-    lazy val ehcache = Play.current.plugin[EhCachePlugin].map(_.api).getOrElse {
+    lazy val ehcache = Play.current.plugin[CachePlugin].map(_.api).getOrElse {
       throw new RuntimeException("EhCachePlugin is not found.")
     }
     lazy val memcache = Play.current.plugin[MemcachedPlugin].map(_.api).getOrElse {
@@ -86,24 +86,26 @@ object EhcachePluginComplianceSpec extends ServerIntegrationSpec {
 
   "Ehcache implementations of Cache API" should {
 
-    "store nulls on setting nulls" in new cacheImpls {
+    // Until Play 2.2.0, the EhCache plugin had been setting `null` value on `Cache#set(key, null)`.
+    // However, since Play 2.2.0, it:
+    "remove keys on setting nulls" in new cacheImpls {
 
       ehcache.set(key, "aa", 0)
+
+      ehcache.get(key) must be some ("aa")
+
       ehcache.set(key, null, 0)
 
-      ehcache.get(key) must be equalTo (Some(null))
+      ehcache.get(key) must be equalTo None
 
       ehcache.set(key, "aa", 0)
       ehcache.set(key, null, expiration)
 
-      ehcache.get(key) must be equalTo (Some(null))
+      ehcache.get(key) must be equalTo None
     }
 
     "store value for empty key" in new cacheImpls {
       ehcache.set("", "aa", 0)
-      ehcache.get("") must be some ("aa")
-
-      ehcache.remove("")
       ehcache.get("") must be none
     }
   }
