@@ -3,12 +3,18 @@ import Keys._
 
 object ApplicationBuild extends Build {
 
-  val appName         = "play2-memcached"
+  val appName         = "play2-memcached-" + playShortName
   val appVersion      = "0.7.0"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
   )
+
+  def playShortName: String = {
+    val version = play.core.PlayVersion.current
+    val majorMinor = version.split("""\.""").take(2).mkString("")
+    s"play$majorMinor"
+  }
 
   def playMajorAndMinorVersion: String = {
     val v = play.core.PlayVersion.current
