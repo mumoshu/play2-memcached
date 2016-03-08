@@ -10,6 +10,20 @@ Add the following dependency to your Play project:
 
 ### Library dependencies
 
+For Play 2.5.x:
+
+```scala
+  val appDependencies = Seq(
+    play.PlayImport.cache,
+    "com.github.mumoshu" %% "play2-memcached-play25" % "0.8.0"
+  )
+  val main = Project(appName).enablePlugins(play.PlayScala).settings(
+    version := appVersion,
+    libraryDependencies ++= appDependencies,
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
+  )
+```
+
 For Play 2.4.x:
 
 ```scala
@@ -75,7 +89,7 @@ For Play 2.0:
 
 ### Configurations
 
-#### Play 2.4.x
+#### Starting with Play 2.4.x
 
 ```
 play.modules.enabled+="com.github.mumoshu.play2.memcached.MemcachedModule"
@@ -244,6 +258,8 @@ Configure your configuration endpoint in `application.conf`:
   #24 Empty keys - kind of ehcache compilance, avoiding IllegalArgumentExceptions (thanks to @mkubala)
 
 0.7.0 Cross built for Play 2.3.x, 2.4.x, Scala 2.10.5 and 2.11.6. Artifact IDs are renamed to `play2-memcached-play2{3,4}_2.1{0,1}`
+
+0.8.0 Built for Play 2.5.x and Scala 2.11.7. Artifact ID for this build is `play2-memcached-play25_2.11`
 
 ### Acknowledgement
 

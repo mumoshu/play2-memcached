@@ -5,3 +5,5 @@ for play_version in 2.{3.9,4.0}; do
     PLAY_VERSION=$play_version sbt ++$scala_version publish-signed
   done
 done
+
+PLAY_VERSION=2.5.0 sbt ++2.11.7 publish-signed

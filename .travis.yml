@@ -2,6 +2,7 @@ language: scala
 scala:
   - 2.10.5
   - 2.11.6
+  - 2.11.7
 services:
   - memcache
 jdk:
@@ -9,11 +10,24 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 env:
+  - PLAY_VERSION=2.5.0
   - PLAY_VERSION=2.4.0
   - PLAY_VERSION=2.3.9
 matrix:
   exclude:
+    - env: PLAY_VERSION=2.5.0
+      scala: 2.10.5
+    - env: PLAY_VERSION=2.5.0
+      scala: 2.11.6
+    - env: PLAY_VERSION=2.5.0
+      jdk: openjdk7
+    - env: PLAY_VERSION=2.5.0
+      jdk: oraclejdk7
     - env: PLAY_VERSION=2.4.0
       jdk: openjdk7
     - env: PLAY_VERSION=2.4.0
       jdk: oraclejdk7
+    - env: PLAY_VERSION=2.4.0
+      scala: 2.11.7
+    - env: PLAY_VERSION=2.3.9
+      scala: 2.11.7

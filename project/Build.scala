@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.7.0"
+  val appVersion      = "0.8.0"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
@@ -21,10 +21,6 @@ object ApplicationBuild extends Build {
   def playMajorAndMinorVersion: String = {
     val v = play.core.PlayVersion.current
     v.split("""\.""").take(2).mkString(".")
-  }
-
-  def isPlay24: Boolean = {
-    playMajorAndMinorVersion == "2.4"
   }
 
   def playVersionSpecificSourceDirectoryUnder(sd: java.io.File): java.io.File = {
@@ -49,8 +45,7 @@ object ApplicationBuild extends Build {
   lazy val plugin = Project(appName, base = file("plugin"))
     .settings(baseSettings: _*)
     .settings(
-      resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/",
-      resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
+      resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies += "net.spy" % "spymemcached" % "2.9.0",
@@ -98,11 +93,11 @@ object ApplicationBuild extends Build {
     )
 
     def playCache: ModuleID = {
-      play.PlayImport.cache
+      play.sbt.PlayImport.cache
     }
 
     def playScalaPlugin: AutoPlugin = {
-      play.PlayScala
+      play.sbt.PlayScala
     }
 
     lazy val scalaSample = Project(
@@ -111,7 +106,7 @@ object ApplicationBuild extends Build {
     ).enablePlugins(playScalaPlugin).settings(
         playScalaPlugin.projectSettings: _*
     ).settings(
-      resolvers += "Typesafe Maven Repository" at "http://repo.typesafe.com/typesafe/maven-releases/",
+      resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       libraryDependencies += playCache,
       parallelExecution in Test := false,
       publishLocal := {},
@@ -123,8 +118,8 @@ object ApplicationBuild extends Build {
     lazy val javaSample = Project(
       "java-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/java"))
-    ).enablePlugins(play.PlayJava).settings(baseSettings: _*).settings(
-      libraryDependencies += play.PlayImport.cache,
+    ).enablePlugins(play.sbt.PlayJava).settings(baseSettings: _*).settings(
+      libraryDependencies += play.sbt.PlayImport.cache,
       publishLocal := {},
       publish := {},
       publishLocalSigned := {},
