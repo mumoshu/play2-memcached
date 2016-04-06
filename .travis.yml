@@ -13,6 +13,8 @@ env:
   - PLAY_VERSION=2.5.0
   - PLAY_VERSION=2.4.0
   - PLAY_VERSION=2.3.9
+script:
+  - if [ "$PLAY_VERSION" = "2.3.9" ]; then cd play23; fi; pwd; sbt ++$TRAVIS_SCALA_VERSION test
 matrix:
   exclude:
     - env: PLAY_VERSION=2.5.0

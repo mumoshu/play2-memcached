@@ -93,11 +93,11 @@ object ApplicationBuild extends Build {
     )
 
     def playCache: ModuleID = {
-      play.sbt.PlayImport.cache
+      play2compat.PlayImport.cache
     }
 
     def playScalaPlugin: AutoPlugin = {
-      play.sbt.PlayScala
+      play2compat.PlayScala
     }
 
     lazy val scalaSample = Project(
@@ -118,8 +118,8 @@ object ApplicationBuild extends Build {
     lazy val javaSample = Project(
       "java-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/java"))
-    ).enablePlugins(play.sbt.PlayJava).settings(baseSettings: _*).settings(
-      libraryDependencies += play.sbt.PlayImport.cache,
+    ).enablePlugins(play2compat.PlayJava).settings(baseSettings: _*).settings(
+      libraryDependencies += play2compat.PlayImport.cache,
       publishLocal := {},
       publish := {},
       publishLocalSigned := {},
