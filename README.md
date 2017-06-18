@@ -259,7 +259,7 @@ Configure your configuration endpoint in `application.conf`:
 
 0.7.0 Cross built for Play 2.3.x, 2.4.x, Scala 2.10.5 and 2.11.6. Artifact IDs are renamed to `play2-memcached-play2{3,4}_2.1{0,1}`
 
-0.8.0 Built for Play 2.5.x and Scala 2.11.7. Artifact ID for this build is `play2-memcached-play25_2.11`
+0.8.0 Built for Play 2.5.x and Scala 2.11.11. Artifact ID for this build is `play2-memcached-play25_2.11`
 
 ### Acknowledgement
 

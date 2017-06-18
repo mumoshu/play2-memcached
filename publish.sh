@@ -6,4 +6,4 @@ for play_version in 2.{3.9,4.0}; do
   done
 done
 
-PLAY_VERSION=2.5.0 sbt ++2.11.7 publish-signed
+PLAY_VERSION=2.5.0 sbt ++2.11.11 publish-signed
