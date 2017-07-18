@@ -55,7 +55,8 @@ object ApplicationBuild extends Build {
       libraryDependencies += "org.specs2" %% "specs2" % "2.4.15" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
-      publishTo <<= version { v: String =>
+      publishTo := {
+        val v = version.value
         val nexus = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
         else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
@@ -84,11 +85,11 @@ object ApplicationBuild extends Build {
             </developer>
           </developers>
         ),
-      unmanagedSourceDirectories in Compile <<= (unmanagedSourceDirectories in Compile, sourceDirectory in Compile) { (sds: Seq[java.io.File], sd: java.io.File) =>
-        playVersionSpecificUnmanagedSourceDirectories(sds, sd)
+      unmanagedSourceDirectories in Compile := {
+        playVersionSpecificUnmanagedSourceDirectories((unmanagedSourceDirectories in Compile).value, (sourceDirectory in Compile).value)
       },
-      unmanagedSourceDirectories in Test <<= (unmanagedSourceDirectories in Test, sourceDirectory in Test) { (sds: Seq[java.io.File], sd: java.io.File) =>
-        playVersionSpecificUnmanagedSourceDirectories(sds, sd)
+      unmanagedSourceDirectories in Test := {
+        playVersionSpecificUnmanagedSourceDirectories((unmanagedSourceDirectories in Test).value, (sourceDirectory in Test).value)
       }
     )
 
