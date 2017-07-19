@@ -261,6 +261,14 @@ Configure your configuration endpoint in `application.conf`:
 
 0.8.0 Built for Play 2.5.x and Scala 2.11.11. Artifact ID for this build is `play2-memcached-play25_2.11`
 
+### Publishing to the central
+
+E.g. for play 2.5:
+
+```
+PLAY_VERSION=2.5.0 sbt ++2.11.11 publishSigned sonatypeRelease
+```
+
 ### Acknowledgement
 
 Thanks to:
@@ -269,7 +277,6 @@ Thanks to:
 @rmmeans for adding configurable timeouts on the future.
 @mkubala for improving compliance with EhCache.
 
-
-## Build status
+### Build status
 
 [![Build Status](https://secure.travis-ci.org/mumoshu/play2-memcached.png)](http://travis-ci.org/mumoshu/play2-memcached)
