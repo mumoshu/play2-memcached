@@ -38,7 +38,7 @@ object MemcachedSpec extends Specification {
 
   "play2-memcached" should {
     "provide MemcachedModule" in {
-      (modules.find { module => module.isInstanceOf[MemcachedModule] }.get) must beAnInstanceOf[MemcachedModule]
+      (modules.find { module => module.isInstanceOf[MemcachedModule] }.get).asInstanceOf[MemcachedModule] must beAnInstanceOf[MemcachedModule]
     }
   }
 

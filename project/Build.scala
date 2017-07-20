@@ -53,7 +53,7 @@ object ApplicationBuild extends Build {
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
-      libraryDependencies += "org.specs2" %% "specs2" % "2.4.15" % "test",
+      libraryDependencies += "org.specs2" %% "specs2-core" % "3.9.4" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo := {
