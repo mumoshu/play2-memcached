@@ -1,8 +1,8 @@
 libraryDependencies ++= Seq(
   jdbc,
-  cache,
+  cacheApi,
   ws,
-  "com.github.mumoshu" %% "play2-memcached-play25" % "0.8.0",
+  "com.github.mumoshu" %% "play2-memcached-play26" % "0.9.0",
   specs2 % Test
 )
 

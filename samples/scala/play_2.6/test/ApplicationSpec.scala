@@ -1,11 +1,13 @@
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
-import play.api.cache.CacheApi
+import play.api.cache.SyncCacheApi
 
+import play.api.Application
 import play.api.test._
 import play.api.test.Helpers._
 import play.cache.NamedCacheImpl
+import play.api.inject.guice.GuiceApplicationBuilder
 
 /**
  * Add your spec here.
@@ -17,14 +19,18 @@ class ApplicationSpec extends Specification {
 
   sequential
 
+  def app = GuiceApplicationBuilder().configure(Map(
+      "memcached.host" -> "127.0.0.1:11211"
+    )).build()
+
   "Application" should {
 
-    "send 404 on a bad request" in new WithApplication{
-      route(FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
+    "send 404 on a bad request" in new WithApplication(app){
+      route(app, FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
     }
 
-    "render the index page" in new WithApplication{
-      val home = route(FakeRequest(GET, "/")).get
+    "render the index page" in new WithApplication(app){
+      val home = route(app, FakeRequest(GET, "/")).get
 
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
@@ -32,46 +38,37 @@ class ApplicationSpec extends Specification {
     }
   }
 
-  def connectingLocalMemcached[T](block: => T):T = {
-    val app = FakeApplication(
-      additionalConfiguration = Map(
-        "ehcacheplugin" -> "disabled",
-        "memcached.host" -> "127.0.0.1:11211",
-        "logger.memcached.plugin" -> "DEBUG"
-      )
-    )
+  def connectingLocalMemcached[T](app: Application)(block: => T):T = {
 
-    running(app) {
-      app.injector.instanceOf[CacheApi].remove("key")
+      app.injector.instanceOf[SyncCacheApi].remove("key")
 
-      val bindingKey = play.api.inject.BindingKey(classOf[CacheApi]).qualifiedWith(new NamedCacheImpl("session-cache"))
+      val bindingKey = play.api.inject.BindingKey(classOf[SyncCacheApi]).qualifiedWith(new NamedCacheImpl("session-cache"))
       app.injector.instanceOf(bindingKey).remove("key")
 
       block
-    }
   }
 
-  def c(url: String): String = contentAsString(route(FakeRequest(GET, url)).get)
+  def c(app: Application, url: String): String = contentAsString(route(app, FakeRequest(GET, url)).get)
 
   "The scala sample application" should {
 
-    "return a cached data" in {
-      connectingLocalMemcached {
-        c("/cache/get") must equalTo ("None")
-        c("/cache/set") must equalTo ("Cached.")
-        c("/cache/get") must equalTo ("Some(cached value)")
-        c("/session/get") must equalTo ("None")
-        c("/session/set") must equalTo ("Cached.")
-        c("/session/get") must equalTo ("Some(session value)")
-        c("/cache/get") must equalTo ("Some(cached value)")
+    "return a cached data" in new WithApplication(app){
+      connectingLocalMemcached(app) {
+        c(app, "/cache/get") must equalTo ("None")
+        c(app, "/cache/set") must equalTo ("Cached.")
+        c(app, "/cache/get") must equalTo ("Some(cached value)")
+        c(app, "/session/get") must equalTo ("None")
+        c(app, "/session/set") must equalTo ("Cached.")
+        c(app, "/session/get") must equalTo ("Some(session value)")
+        c(app, "/cache/get") must equalTo ("Some(cached value)")
       }
     }
 
-    "return expected results" in {
-      connectingLocalMemcached {
-        c("/cacheInt") must equalTo ("123class java.lang.Integer 123 int")
-        c("/cacheString") must equalTo ("Some(mikoto)")
-        c("/cacheBool") must equalTo ("true : class java.lang.Boolean, true : boolean")
+    "return expected results" in new WithApplication(app){
+      connectingLocalMemcached(app) {
+        c(app, "/cacheInt") must equalTo ("123class java.lang.Integer 123 int")
+        c(app, "/cacheString") must equalTo ("Some(mikoto)")
+        c(app, "/cacheBool") must equalTo ("true : class java.lang.Boolean, true : boolean")
       }
     }
   }
