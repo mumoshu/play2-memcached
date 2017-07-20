@@ -94,7 +94,7 @@ object ApplicationBuild extends Build {
     )
 
     def playCache: ModuleID = {
-      play2compat.PlayImport.cache
+      play2compat.PlayCache
     }
 
     def playScalaPlugin: AutoPlugin = {
@@ -120,7 +120,7 @@ object ApplicationBuild extends Build {
       "java-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/java"))
     ).enablePlugins(play2compat.PlayJava).settings(baseSettings: _*).settings(
-      libraryDependencies += play2compat.PlayImport.cache,
+      libraryDependencies += playCache,
       publishLocal := {},
       publish := {},
       publishLocalSigned := {},
