@@ -4,6 +4,7 @@ import akka.Done
 
 import net.spy.memcached.transcoders.Transcoder
 import net.spy.memcached.internal.{ GetCompletionListener, GetFuture }
+import net.spy.memcached.ops.StatusCode
 import play.api.cache.AsyncCacheApi
 import play.api.{Logger, Configuration}
 
@@ -20,45 +21,44 @@ import scala.reflect.ClassTag
 class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, configuration: Configuration)(implicit context: ExecutionContext) extends AsyncCacheApi {
   lazy val logger = Logger("memcached.plugin")
   lazy val tc = new CustomSerializing().asInstanceOf[Transcoder[Any]]
-  lazy val timeout: Int = configuration.getInt("memcached.timeout").getOrElse(1)
 
-  lazy val timeunit: TimeUnit = {
-    configuration.getString("memcached.timeunit").getOrElse("seconds") match {
-      case "seconds" => TimeUnit.SECONDS
-      case "milliseconds" => TimeUnit.MILLISECONDS
-      case "microseconds" => TimeUnit.MICROSECONDS
-      case "nanoseconds" => TimeUnit.NANOSECONDS
-      case _ => TimeUnit.SECONDS
-    }
-  }
-  def get[T: ClassTag](key: String): Future[Option[T]] =
+  def get[T: ClassTag](key: String): Future[Option[T]] = {
     if (key.isEmpty) {
       Future.successful(None)
     } else {
       val ct = implicitly[ClassTag[T]]
 
-      logger.debug("Getting the cached for key " + namespace + key)
-      val future = client.asyncGet(namespace + key, tc)
-      try {
-        val any = future.get(timeout, timeunit)
-        if (any != null) {
-          logger.debug("any is " + any.getClass)
-        }
-
-        Future.successful(Option(
-          any match {
-            case x if ct.runtimeClass.isInstance(x) => x.asInstanceOf[T]
-            case x if ct == ClassTag.Nothing => x.asInstanceOf[T]
-            case x => x.asInstanceOf[T]
+      logger.debug("Getting the cache for key " + namespace + key)
+      val p = Promise[Option[T]]() // create incomplete promise/future
+      client.asyncGet(namespace + key, tc).addListener(new GetCompletionListener() {
+        def onComplete(result: GetFuture[_]) {
+          result.getStatus().getStatusCode() match {
+            case StatusCode.SUCCESS => {
+              val any = result.get
+              logger.debug("any is " + any.getClass)
+              p.success(Option(
+                any match {
+                  case x if ct.runtimeClass.isInstance(x) => x.asInstanceOf[T]
+                  case x if ct == ClassTag.Nothing => x.asInstanceOf[T]
+                  case x => x.asInstanceOf[T]
+                }
+              ))
+            }
+            case StatusCode.ERR_NOT_FOUND => {
+              logger.debug("Cache miss for " + namespace + key)
+              p.success(None)
+            }
+            case _ => {
+              logger.error("An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
+                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage())
+              p.success(None)
+            }
           }
-        ))
-      } catch {
-        case e: Throwable =>
-          logger.error("An error has occured while getting the value from memcached. ct=" + ct , e)
-          future.cancel(false)
-          Future.successful(None)
-      }
+        }
+      })
+      p.future
     }
+  }
 
   def getOrElseUpdate[A: ClassTag](key: String, expiration: Duration)(orElse: => Future[A]): Future[A] = {
     get[A](key).flatMap {

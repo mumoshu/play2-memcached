@@ -49,7 +49,7 @@ object ApplicationBuild extends Build {
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
-      libraryDependencies += "net.spy" % "spymemcached" % "2.9.0",
+      libraryDependencies += "net.spy" % "spymemcached" % (if(playMajorAndMinorVersion.equals("2.6")){ "2.12.3" } else { "2.9.0" }),
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
