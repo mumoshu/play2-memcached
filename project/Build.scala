@@ -48,6 +48,7 @@ object ApplicationBuild extends Build {
       resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       libraryDependencies += "net.spy" % "spymemcached" % "2.9.0",
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
@@ -109,6 +110,7 @@ object ApplicationBuild extends Build {
     ).settings(
       resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       libraryDependencies += playCache,
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       parallelExecution in Test := false,
       publishLocal := {},
       publish := {},
@@ -121,6 +123,7 @@ object ApplicationBuild extends Build {
       playVersionSpecificSourceDirectoryUnder(file("samples/java"))
     ).enablePlugins(play2compat.PlayJava).settings(baseSettings: _*).settings(
       libraryDependencies += playCache,
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       publishLocal := {},
       publish := {},
       publishLocalSigned := {},
