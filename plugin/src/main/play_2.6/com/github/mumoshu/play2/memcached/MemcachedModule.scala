@@ -21,8 +21,8 @@ class MemcachedModule extends SimpleModule((environment, configuration) => {
 
   import scala.collection.JavaConverters._
 
-  val defaultCacheName = configuration.underlying.getString("play.modules.cache.defaultCache")
-  val bindCaches = configuration.underlying.getStringList("play.modules.cache.bindCaches").asScala
+  val defaultCacheName = configuration.underlying.getString("play.cache.defaultCache")
+  val bindCaches = configuration.underlying.getStringList("play.cache.bindCaches").asScala
 
   // Creates a named cache qualifier
   def named(name: String): NamedCache = {
