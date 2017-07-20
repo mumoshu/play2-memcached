@@ -21,6 +21,7 @@ import scala.reflect.ClassTag
 class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, configuration: Configuration)(implicit context: ExecutionContext) extends AsyncCacheApi {
   lazy val logger = Logger("memcached.plugin")
   lazy val tc = new CustomSerializing().asInstanceOf[Transcoder[Any]]
+  lazy val hashkeys: String = configuration.getString("memcached.hashkeys").getOrElse("off")
 
   def get[T: ClassTag](key: String): Future[Option[T]] = {
     if (key.isEmpty) {
@@ -30,7 +31,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
 
       logger.debug("Getting the cache for key " + namespace + key)
       val p = Promise[Option[T]]() // create incomplete promise/future
-      client.asyncGet(namespace + key, tc).addListener(new GetCompletionListener() {
+      client.asyncGet(namespace + hash(key), tc).addListener(new GetCompletionListener() {
         def onComplete(result: GetFuture[_]) {
           result.getStatus().getStatusCode() match {
             case StatusCode.SUCCESS => {
@@ -70,14 +71,14 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
   def set(key: String, value: Any, expiration: Duration = Duration.Inf): Future[Done] = Future {
     if (!key.isEmpty) {
       val exp = if (expiration.isFinite()) expiration.toSeconds.toInt else 0
-      client.set(namespace + key, exp, value, tc)
+      client.set(namespace + hash(key), exp, value, tc)
     }
     Done
   }
 
   def remove(key: String): Future[Done] = Future {
     if (!key.isEmpty) {
-      client.delete(namespace + key)
+      client.delete(namespace + hash(key))
     }
     Done
   }
@@ -86,6 +87,10 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
     client.flush()
     Done
   }
+
+  // you may override hash implementation to use more sophisticated hashes, like xxHash for higher performance
+  protected def hash(key: String): String = if(hashkeys == "off") key
+    else java.security.MessageDigest.getInstance(hashkeys).digest(key.getBytes).map("%02x".format(_)).mkString
 }
 
 object MemcachedCacheApi {
