@@ -22,6 +22,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
   lazy val logger = Logger("memcached.plugin")
   lazy val tc = new CustomSerializing().asInstanceOf[Transcoder[Any]]
   lazy val hashkeys: String = configuration.getString("memcached.hashkeys").getOrElse("off")
+  lazy val throwExceptionFromGetOnError: Boolean = configuration.getBoolean("memcached.throwExceptionFromGetOnError").getOrElse(false)
 
   def get[T: ClassTag](key: String): Future[Option[T]] = {
     if (key.isEmpty) {
@@ -50,9 +51,14 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
               p.success(None)
             }
             case _ => {
-              logger.error("An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
-                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage())
-              p.success(None)
+              val msg = "An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
+                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+              if (throwExceptionFromGetOnError) {
+                p.failure(new RuntimeException(msg))
+              } else {
+                logger.error(msg)
+                p.success(None)
+              }
             }
           }
         }
