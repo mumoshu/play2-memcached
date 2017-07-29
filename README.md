@@ -116,7 +116,7 @@ play.cache.bindCaches=["db-cache", "user-cache", "session-cache"]
 memcached.host="127.0.0.1:11211"
 ```
 
-#### Starting with Play 2.4.x
+#### For Play 2.4.x and above
 
 ```
 play.modules.enabled+="com.github.mumoshu.play2.memcached.MemcachedModule"
@@ -163,7 +163,7 @@ If you have multiple memcached instances over different host names or IP address
 
 ### Code examples
 
-#### Starting with Play 2.4.x
+#### For Play 2.4.x and above
 
 See the Play Framework documentation for the [Scala](https://www.playframework.com/documentation/2.6.x/ScalaCache) and [Java](https://www.playframework.com/documentation/2.6.x/JavaCache) API.
 
@@ -222,7 +222,7 @@ If you memcached requires the client an authentication with SASL, provide userna
 By default, the plugin (or the spymemcached under the hood) does not output any logs at all.
 If you need to peek into what's going on, set the log level like:
 
-##### Starting with Play 2.4
+##### For Play 2.4.x and above
 
 In your `logback.xml`:
 
@@ -240,7 +240,7 @@ In your `logback.xml`:
 
 You can prefix every key to put/get/remove with a global namespace.
 
-##### Starting with Play 2.4
+##### For Play 2.4.x and above
 
 You can inject an `(ASync)CacheApi` with @play.cache.NamedCache to prefix all the keys you get, set and remove with the given namespace.
 There is more documentation in the official Play Framework documentation.
