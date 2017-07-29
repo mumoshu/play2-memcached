@@ -11,6 +11,7 @@ Add the following dependency to your Play project:
 ### Library dependencies
 
 For Play 2.6.x:
+!!! Changed `play.modules.cache.*` config keys to `play.cache.*` !!!
 
 ```scala
   val appDependencies = Seq(
@@ -318,7 +319,7 @@ Configure your configuration endpoint in `application.conf`:
 0.8.0 Built for Play 2.5.x and Scala 2.11.11. Artifact ID for this build is `play2-memcached-play25_2.11`
 
 0.9.0 Built for Play 2.6.x and Scala 2.11.11 and 2.12.3. Artifact ID for this build is `play2-memcached-play26_2.1{1,2}`
-  !!! Changed play.modules.cache.* config keys to play.cache.* !!!
+  !!! Changed `play.modules.cache.*` config keys to `play.cache.*` !!!
 
 ### Publishing to the central
 
