@@ -3,7 +3,7 @@ package com.github.mumoshu.play2.memcached
 import akka.Done
 
 import net.spy.memcached.transcoders.Transcoder
-import net.spy.memcached.internal.{ GetCompletionListener, GetFuture }
+import net.spy.memcached.internal.{ GetCompletionListener, GetFuture, OperationCompletionListener, OperationFuture }
 import net.spy.memcached.ops.StatusCode
 import play.api.cache.AsyncCacheApi
 import play.api.{Logger, Configuration}
@@ -74,24 +74,89 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
     }
   }
 
-  def set(key: String, value: Any, expiration: Duration = Duration.Inf): Future[Done] = Future {
+  def set(key: String, value: Any, expiration: Duration = Duration.Inf): Future[Done] = {
     if (!key.isEmpty) {
+      val p = Promise[Done]() // create incomplete promise/future
       val exp = if (expiration.isFinite()) expiration.toSeconds.toInt else 0
-      client.set(namespace + hash(key), exp, value, tc)
+      client.set(namespace + hash(key), exp, value, tc).addListener(new OperationCompletionListener() {
+        def onComplete(result: OperationFuture[_]) {
+          result.getStatus().getStatusCode() match {
+            case StatusCode.SUCCESS => {
+              p.success(Done)
+            }
+            case _ => {
+              val msg = "An error has occured while setting the value in memcached. key=" + key + ". value=" + value + ". " +
+                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+              if (throwExceptionFromGetOnError) {
+                p.failure(new RuntimeException(msg))
+              } else {
+                logger.error(msg)
+                p.success(Done)
+              }
+            }
+          }
+        }
+      })
+      p.future
+    } else {
+      Future.successful(Done)
     }
-    Done
   }
 
-  def remove(key: String): Future[Done] = Future {
+  def remove(key: String): Future[Done] = {
     if (!key.isEmpty) {
-      client.delete(namespace + hash(key))
+      val p = Promise[Done]() // create incomplete promise/future
+      client.delete(namespace + hash(key)).addListener(new OperationCompletionListener() {
+        def onComplete(result: OperationFuture[_]) {
+          result.getStatus().getStatusCode() match {
+            case StatusCode.SUCCESS => {
+              p.success(Done)
+            }
+            case StatusCode.ERR_NOT_FOUND => {
+              logger.debug("Cache miss when removing " + namespace + key)
+              p.success(Done)
+            }
+            case _ => {
+              val msg = "An error has occured while removing the value in memcached. key=" + key + ". " +
+                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+              if (throwExceptionFromGetOnError) {
+                p.failure(new RuntimeException(msg))
+              } else {
+                logger.error(msg)
+                p.success(Done)
+              }
+            }
+          }
+        }
+      })
+      p.future
+    } else {
+      Future.successful(Done)
     }
-    Done
   }
 
-  def removeAll(): Future[Done] = Future {
-    client.flush()
-    Done
+  def removeAll(): Future[Done] = {
+    val p = Promise[Done]() // create incomplete promise/future
+    client.flush().addListener(new OperationCompletionListener() {
+      def onComplete(result: OperationFuture[_]) {
+        result.getStatus().getStatusCode() match {
+          case StatusCode.SUCCESS => {
+            p.success(Done)
+          }
+          case _ => {
+            val msg = "An error has occured while removing all values from memcached. " +
+              "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+            if (throwExceptionFromGetOnError) {
+              p.failure(new RuntimeException(msg))
+            } else {
+              logger.error(msg)
+              p.success(Done)
+            }
+          }
+        }
+      }
+    })
+    p.future
   }
 
   // you may override hash implementation to use more sophisticated hashes, like xxHash for higher performance
