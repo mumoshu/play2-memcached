@@ -13,5 +13,5 @@ cd $SCRIPT_DIR
 PLAY_VERSION=2.5.0 sbt ++2.11.11 publish-signed
 
 cd $SCRIPT_DIR/play26
-PLAY_VERSION=2.6.1 sbt ++2.11.11 publish-signed
-PLAY_VERSION=2.6.1 sbt ++2.12.2 publish-signed
+PLAY_VERSION=2.6.2 sbt ++2.11.11 publish-signed
+PLAY_VERSION=2.6.2 sbt ++2.12.2 publish-signed
