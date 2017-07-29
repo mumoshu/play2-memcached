@@ -3,7 +3,7 @@ scala:
   - 2.10.5
   - 2.11.6
   - 2.11.11
-  - 2.12.2
+  - 2.12.3
 services:
   - memcache
 jdk:
@@ -40,7 +40,7 @@ matrix:
     - env: PLAY_VERSION=2.5.0
       scala: 2.11.6
     - env: PLAY_VERSION=2.5.0
-      scala: 2.12.2
+      scala: 2.12.3
     - env: PLAY_VERSION=2.5.0
       jdk: openjdk7
     - env: PLAY_VERSION=2.5.0
@@ -52,8 +52,8 @@ matrix:
     - env: PLAY_VERSION=2.4.0
       scala: 2.11.11
     - env: PLAY_VERSION=2.4.0
-      scala: 2.12.2
+      scala: 2.12.3
     - env: PLAY_VERSION=2.3.9
       scala: 2.11.11
     - env: PLAY_VERSION=2.3.9
-      scala: 2.12.2
+      scala: 2.12.3
