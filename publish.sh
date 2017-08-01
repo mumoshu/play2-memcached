@@ -9,4 +9,9 @@ for play_version in 2.{3.9,4.0}; do
   done
 done
 
+cd $SCRIPT_DIR
 PLAY_VERSION=2.5.0 sbt ++2.11.11 publish-signed
+
+cd $SCRIPT_DIR/play26
+PLAY_VERSION=2.6.2 sbt ++2.11.11 publish-signed
+PLAY_VERSION=2.6.2 sbt ++2.12.3 publish-signed

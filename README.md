@@ -10,6 +10,21 @@ Add the following dependency to your Play project:
 
 ### Library dependencies
 
+For Play 2.6.x:
+!!! Changed `play.modules.cache.*` config keys to `play.cache.*` !!!
+
+```scala
+  val appDependencies = Seq(
+    play.PlayImport.cacheApi,
+    "com.github.mumoshu" %% "play2-memcached-play26" % "0.9.0"
+  )
+  val main = Project(appName).enablePlugins(play.PlayScala).settings(
+    version := appVersion,
+    libraryDependencies ++= appDependencies,
+    resolvers += "Spy Repository" at "http://files.couchbase.com/maven2" // required to resolve `spymemcached`, the plugin's dependency.
+  )
+```
+
 For Play 2.5.x:
 
 ```scala
@@ -89,7 +104,20 @@ For Play 2.0:
 
 ### Configurations
 
-#### Starting with Play 2.4.x
+#### Starting with Play 2.6.x
+
+```
+play.modules.enabled+="com.github.mumoshu.play2.memcached.MemcachedModule"
+
+# Well-known configuration provided by Play
+play.cache.defaultCache=default
+play.cache.bindCaches=["db-cache", "user-cache", "session-cache"]
+
+# Tell play2-memcached where your memcached host is located at
+memcached.host="127.0.0.1:11211"
+```
+
+#### For Play 2.4.x and above
 
 ```
 play.modules.enabled+="com.github.mumoshu.play2.memcached.MemcachedModule"
@@ -136,6 +164,12 @@ If you have multiple memcached instances over different host names or IP address
 
 ### Code examples
 
+#### For Play 2.4.x and above
+
+See the Play Framework documentation for the [Scala](https://www.playframework.com/documentation/2.6.x/ScalaCache) and [Java](https://www.playframework.com/documentation/2.6.x/JavaCache) API.
+
+#### For Play 2.3.x or below
+
 Then, you can use the `play.api.cache.Cache` object to store a value in memcached:
 
 ```scala
@@ -166,7 +200,7 @@ You can remove the value (It's not yet a part of Play 2.0's Cache API, though):
 
 ### Advanced configurations
 
-#### Disabling the plugin
+#### Disabling the plugin (For Play 2.3.x or below)
 
 You can disable the plugin in a similar manner to Play's build-in Ehcache Plugin.
 To disable the plugin in `application.conf`:
@@ -189,6 +223,16 @@ If you memcached requires the client an authentication with SASL, provide userna
 By default, the plugin (or the spymemcached under the hood) does not output any logs at all.
 If you need to peek into what's going on, set the log level like:
 
+##### For Play 2.4.x and above
+
+In your `logback.xml`:
+
+```
+  <logger name="memcached" level="DEBUG" />
+```
+
+#### For Play 2.3.x or below
+
 ```
   logger.memcached=DEBUG
 ```
@@ -196,6 +240,18 @@ If you need to peek into what's going on, set the log level like:
 #### Namespacing
 
 You can prefix every key to put/get/remove with a global namespace.
+
+##### For Play 2.4.x and above
+
+You can inject an `(ASync)CacheApi` with @play.cache.NamedCache to prefix all the keys you get, set and remove with the given namespace.
+There is more documentation in the official Play Framework documentation.
+
+```
+  @Inject @play.cache.NamedCache("user-cache") private AsyncCacheApi cacheApi;
+```
+
+##### For Play 2.3.x or below
+
 By default, the namespace is an empty string, implying you don't use namespacing at all.
 To enable namespacing, configure it in "application.conf":
 
@@ -205,10 +261,11 @@ To enable namespacing, configure it in "application.conf":
 
 ### Configuring timeouts
 
-You can specify timeouts for obtaining values from Memcached.
+Until Play version 2.6 you can specify timeouts for obtaining values from Memcached.
+This option isn't needed anymore since Play 2.6 because since that version Play's cache api is async per default.
 
 ```
-  # Timeout in 1 second
+  # Timeout in 1 second (only until Play version 2.6)
   memcached.timeout=1
 ```
 
@@ -260,6 +317,9 @@ Configure your configuration endpoint in `application.conf`:
 0.7.0 Cross built for Play 2.3.x, 2.4.x, Scala 2.10.5 and 2.11.6. Artifact IDs are renamed to `play2-memcached-play2{3,4}_2.1{0,1}`
 
 0.8.0 Built for Play 2.5.x and Scala 2.11.11. Artifact ID for this build is `play2-memcached-play25_2.11`
+
+0.9.0 Built for Play 2.6.x and Scala 2.11.11 and 2.12.3. Artifact ID for this build is `play2-memcached-play26_2.1{1,2}`
+  !!! Changed `play.modules.cache.*` config keys to `play.cache.*` !!!
 
 ### Publishing to the central
 

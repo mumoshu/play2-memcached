@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.8.0"
+  val appVersion      = "0.9.0"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
@@ -48,11 +48,12 @@ object ApplicationBuild extends Build {
       resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
-      libraryDependencies += "net.spy" % "spymemcached" % "2.9.0",
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
+      libraryDependencies += "net.spy" % "spymemcached" % (if(playMajorAndMinorVersion.equals("2.6")){ "2.12.3" } else { "2.9.0" }),
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
-      libraryDependencies += "org.specs2" %% "specs2" % "2.4.15" % "test",
+      libraryDependencies += "org.specs2" %% "specs2-core" % "3.9.4" % "test",
       organization := "com.github.mumoshu",
       version := appVersion,
       publishTo := {
@@ -94,7 +95,7 @@ object ApplicationBuild extends Build {
     )
 
     def playCache: ModuleID = {
-      play2compat.PlayImport.cache
+      play2compat.PlayCache
     }
 
     def playScalaPlugin: AutoPlugin = {
@@ -109,6 +110,7 @@ object ApplicationBuild extends Build {
     ).settings(
       resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
       libraryDependencies += playCache,
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       parallelExecution in Test := false,
       publishLocal := {},
       publish := {},
@@ -120,7 +122,8 @@ object ApplicationBuild extends Build {
       "java-sample",
       playVersionSpecificSourceDirectoryUnder(file("samples/java"))
     ).enablePlugins(play2compat.PlayJava).settings(baseSettings: _*).settings(
-      libraryDependencies += play2compat.PlayImport.cache,
+      libraryDependencies += playCache,
+      libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       publishLocal := {},
       publish := {},
       publishLocalSigned := {},

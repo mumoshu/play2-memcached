@@ -3,7 +3,7 @@ import org.specs2.mutable._
 import play.api.test._
 
 import com.github.mumoshu.play2.memcached._
-import play.api.cache.CacheApi
+import play.api.cache.AsyncCacheApi
 import play.api.inject._
 import play.cache.NamedCacheImpl
 import play.test.WithApplication
@@ -22,12 +22,13 @@ object MemcachedSpec extends Specification {
 
   val configurationMap: Map[String, Object] = Map(
     "play.modules.enabled" -> List(
+      "play.api.i18n.I18nModule",
+      "play.api.mvc.CookiesModule",
       "com.github.mumoshu.play2.memcached.MemcachedModule",
       "play.api.inject.BuiltinModule"
-    ),
-    "play.modules.disabled" -> List("play.api.cache.EhCacheModule"),
-    "play.modules.cache.defaultCache" -> "default",
-    "play.modules.cache.bindCaches" -> List("secondary"),
+    ).asJava,
+    "play.cache.defaultCache" -> "default",
+    "play.cache.bindCaches" -> List("secondary").asJava,
     "memcached.1.host" -> memcachedHost
   )
   val configuration = play.api.Configuration.from(
@@ -44,7 +45,7 @@ object MemcachedSpec extends Specification {
 
   "Module" should {
     "provide bindings" in {
-      val memcachedModule = modules.head.asInstanceOf[MemcachedModule]
+      val memcachedModule = (modules.find { module => module.isInstanceOf[MemcachedModule] }.get).asInstanceOf[MemcachedModule]
 
       val bindings = memcachedModule.bindings(environment, configuration)
 
@@ -55,27 +56,27 @@ object MemcachedSpec extends Specification {
   "Injector" should {
     import play.api.inject.bind
 
-    def app = play.api.test.FakeApplication(
-      additionalConfiguration = configurationMap
+    def app = play.test.Helpers.fakeApplication(
+      configurationMap.asJava
     )
 
     def injector = app.injector
 
     "provide memcached clients" in {
-      val memcachedClient = injector.instanceOf[MemcachedClient]
+      val memcachedClient = injector.instanceOf(play.api.inject.BindingKey(classOf[MemcachedClient]))
 
       memcachedClient must beAnInstanceOf[MemcachedClient]
     }
 
     "provide a CacheApi implementation backed by memcached" in {
-      val cacheApi = injector.instanceOf[CacheApi]
+      val cacheApi = injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("default")
     }
 
     "provide a named CacheApi implementation backed by memcached" in {
-      val cacheApi = injector.instanceOf(play.api.inject.BindingKey(classOf[CacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
+      val cacheApi = injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("secondary")
