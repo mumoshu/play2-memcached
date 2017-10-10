@@ -1,5 +1,6 @@
 package com.github.mumoshu.play2.memcached;
 
+import play.Environment;
 import play.cache.AsyncCacheApi;
 import play.cache.DefaultAsyncCacheApi;
 import play.components.AkkaComponents;
@@ -37,6 +38,8 @@ import play.inject.ApplicationLifecycle;
  */
 public interface MemcachedComponents extends ConfigurationComponents, AkkaComponents {
 
+    Environment environment();
+
     ApplicationLifecycle applicationLifecycle();
 
     default MemcachedClientProvider memcachedClientProvider() {
@@ -47,7 +50,7 @@ public interface MemcachedComponents extends ConfigurationComponents, AkkaCompon
     }
 
     default AsyncCacheApi cacheApi(String name) {
-        play.api.cache.AsyncCacheApi scalaAsyncCacheApi = new MemcachedCacheApi(name, memcachedClientProvider().get(), configuration(), executionContext());
+        play.api.cache.AsyncCacheApi scalaAsyncCacheApi = new MemcachedCacheApi(name, memcachedClientProvider().get(), configuration(), environment().asScala(), executionContext());
         return new DefaultAsyncCacheApi(scalaAsyncCacheApi);
     }
 

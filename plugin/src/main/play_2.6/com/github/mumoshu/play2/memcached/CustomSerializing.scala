@@ -4,14 +4,14 @@ import java.io.{ObjectOutputStream, ByteArrayOutputStream, ObjectStreamClass}
 
 import net.spy.memcached.transcoders.SerializingTranscoder
 
-class CustomSerializing extends SerializingTranscoder{
+class CustomSerializing(private val classLoader: ClassLoader) extends SerializingTranscoder{
 
   // You should not catch exceptions and return nulls here,
   // because you should cancel the future returned by asyncGet() on any exception.
   override protected def deserialize(data: Array[Byte]): java.lang.Object = {
     new java.io.ObjectInputStream(new java.io.ByteArrayInputStream(data)) {
       override protected def resolveClass(desc: ObjectStreamClass) = {
-        Class.forName(desc.getName(), false, play.api.Play.current.classloader)
+        Class.forName(desc.getName(), false, classLoader)
       }
     }.readObject()
   }

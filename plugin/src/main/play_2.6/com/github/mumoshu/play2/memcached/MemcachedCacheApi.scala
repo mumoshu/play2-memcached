@@ -6,7 +6,7 @@ import net.spy.memcached.transcoders.Transcoder
 import net.spy.memcached.internal.{ GetCompletionListener, GetFuture, OperationCompletionListener, OperationFuture }
 import net.spy.memcached.ops.StatusCode
 import play.api.cache.AsyncCacheApi
-import play.api.{Logger, Configuration}
+import play.api.{Environment, Logger, Configuration}
 
 import javax.inject.{Inject, Singleton}
 
@@ -18,9 +18,9 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.reflect.ClassTag
 
 @Singleton
-class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, configuration: Configuration)(implicit context: ExecutionContext) extends AsyncCacheApi {
+class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, configuration: Configuration, environment: Environment)(implicit context: ExecutionContext) extends AsyncCacheApi {
   lazy val logger = Logger("memcached.plugin")
-  lazy val tc = new CustomSerializing().asInstanceOf[Transcoder[Any]]
+  lazy val tc = new CustomSerializing(environment.classLoader).asInstanceOf[Transcoder[Any]]
   lazy val hashkeys: String = configuration.getString("memcached.hashkeys").getOrElse("off")
   lazy val throwExceptionFromGetOnError: Boolean = configuration.getBoolean("memcached.throwExceptionFromGetOnError").getOrElse(false)
 
