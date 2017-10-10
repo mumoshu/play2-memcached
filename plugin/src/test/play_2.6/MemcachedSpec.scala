@@ -27,6 +27,7 @@ object MemcachedSpec extends Specification {
       "com.github.mumoshu.play2.memcached.MemcachedModule",
       "play.api.inject.BuiltinModule"
     ).asJava,
+    "play.allowGlobalApplication" -> "false",
     "play.cache.defaultCache" -> "default",
     "play.cache.bindCaches" -> List("secondary").asJava,
     "memcached.1.host" -> memcachedHost
