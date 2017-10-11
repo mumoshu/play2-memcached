@@ -13,6 +13,7 @@ import scala.concurrent.ExecutionContext
  */
 trait MemcachedComponents {
   def configuration: Configuration
+  def environment: Environment
   def applicationLifecycle: ApplicationLifecycle
   implicit def executionContext: ExecutionContext
 
@@ -22,7 +23,7 @@ trait MemcachedComponents {
    * Use this to create with the given name.
    */
   def cacheApi(name: String, create: Boolean = true): AsyncCacheApi = {
-    new MemcachedCacheApi(name, memcachedClientProvider.get, configuration)
+    new MemcachedCacheApi(name, memcachedClientProvider.get, configuration, environment)
   }
 
   lazy val defaultCacheApi: AsyncCacheApi = cacheApi("play")

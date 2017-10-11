@@ -6,7 +6,7 @@ import play.api.cache._
 import javax.inject._
 import scala.concurrent.duration._
 
-class Application @Inject() (cache: CacheApi, @NamedCache("session-cache") sessionCache: CacheApi) extends Controller {
+class Application @Inject() (cache: SyncCacheApi, @NamedCache("session-cache") sessionCache: SyncCacheApi, val controllerComponents: ControllerComponents) extends BaseController {
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))

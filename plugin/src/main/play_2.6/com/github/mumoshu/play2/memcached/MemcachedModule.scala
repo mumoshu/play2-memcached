@@ -44,7 +44,7 @@ class MemcachedModule extends SimpleModule((environment, configuration) => {
     val namedCache = named(name)
     val cacheApiKey = bind[AsyncCacheApi].qualifiedWith(namedCache)
     Seq(
-      cacheApiKey.to(new MemcachedCacheApiProvider(name, bind[MemcachedClient], configuration))
+      cacheApiKey.to(new MemcachedCacheApiProvider(name, bind[MemcachedClient], configuration, environment))
     ) ++ wrapperBindings(cacheApiKey, namedCache)
   }
 
