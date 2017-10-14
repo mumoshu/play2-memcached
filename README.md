@@ -259,6 +259,25 @@ To enable namespacing, configure it in "application.conf":
   memcached.namespace=mikoto.
 ```
 
+### Key hashing
+
+You may consider activating this option to enable support for long keys which are composed of more than 250 characters.
+
+It is disabled by default like:
+
+```
+  memcached.hashkeys=off
+```
+
+You can activate it by specifying the name of a message digest algorithm used for hashing:
+
+```
+  memcached.hashkeys=SHA-1
+```
+
+Available options are MD2, MD5, SHA-1, SHA-256, SHA-384, SHA-512.
+Please refer to http://docs.oracle.com/javase/7/docs/technotes/guides/security/StandardNames.html#MessageDigest for the complete list of available algorithms.
+
 ### Configuring timeouts
 
 Until Play version 2.6 you can specify timeouts for obtaining values from Memcached.
