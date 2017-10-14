@@ -261,6 +261,8 @@ To enable namespacing, configure it in "application.conf":
 
 ### Key hashing
 
+**Requires play2-memcached 0.9.0 or later**
+
 You may consider activating this option to enable support for long keys which are composed of more than 250 characters.
 
 It is disabled by default like:
