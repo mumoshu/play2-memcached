@@ -52,18 +52,22 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
                 p.success(None)
               }
               case _ => {
-                val msg = "An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
-                  "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
-                if (throwExceptionFromGetOnError) {
-                  p.failure(new RuntimeException(msg))
-                } else {
-                  logger.error(msg)
-                  p.success(None)
-                }
+                fail(result, None)
               }
             }
           } catch {
-            case e: Throwable => p.failure(e)
+            case e: Throwable => fail(result, Some(e))
+          }
+        }
+
+        def fail(result: GetFuture[_], exception: Option[Throwable]): Unit = {
+          val msg = "An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
+            "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+          if (throwExceptionFromGetOnError) {
+            p.failure(exception.fold(new RuntimeException(msg))(new RuntimeException(msg, _)))
+          } else {
+            logger.error(msg)
+            p.success(None)
           }
         }
       })
