@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 import javax.inject.{Inject, Singleton, Provider}
 
-import net.spy.memcached.{ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
+import net.spy.memcached.{ConnectionFactoryBuilder, AddrUtil, MemcachedClient, DefaultConnectionFactory}
 
 @Singleton
 class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle: ApplicationLifecycle) extends Provider[MemcachedClient] {
@@ -42,6 +42,7 @@ class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle
             new PlainCallbackHandler(memcacheUser, memcachePassword))
           val cf = new ConnectionFactoryBuilder()
             .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
+            .setTimeoutExceptionThreshold(configuration.getInt("memcached.max-timeout-exception-threshold").getOrElse(DefaultConnectionFactory.DEFAULT_MAX_TIMEOUTEXCEPTION_THRESHOLD))
             .setAuthDescriptor(ad)
             .build()
 
