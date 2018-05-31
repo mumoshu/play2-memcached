@@ -348,10 +348,12 @@ Configure your configuration endpoint in `application.conf`:
 
 ### Publishing to the central
 
-E.g. for play 2.5:
-
 ```
-PLAY_VERSION=2.5.0 sbt ++2.11.11 publishSigned sonatypeRelease
+# Play 2.5
+PLAY_VERSION=2.5.0 sbt ++2.11.12 publishSigned sonatypeRelease
+
+# Play 2.6
+PLAY_VERSION=2.6.0 sbt ++2.12.6 publishSigned sonatypeRelease
 ```
 
 ### Acknowledgement
