@@ -42,7 +42,7 @@ class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle
             new PlainCallbackHandler(memcacheUser, memcachePassword))
           val cf = new ConnectionFactoryBuilder()
             .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
-            .setTimeoutExceptionThreshold(configuration.getOptional[Int]("memcached.max-timeout-exception-threshold").getOrElse(DefaultConnectionFactory.DEFAULT_MAX_TIMEOUTEXCEPTION_THRESHOLD))
+            .setTimeoutExceptionThreshold(configuration.getInt("memcached.max-timeout-exception-threshold").getOrElse(DefaultConnectionFactory.DEFAULT_MAX_TIMEOUTEXCEPTION_THRESHOLD))
             .setAuthDescriptor(ad)
             .build()
 
