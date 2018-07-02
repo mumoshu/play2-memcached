@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 import javax.inject.{Inject, Singleton, Provider}
 
-import net.spy.memcached.{DefaultHashAlgorithm, FailureMode, KetamaConnectionFactory, ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
+import net.spy.memcached.{DefaultHashAlgorithm, KetamaConnectionFactory, ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
 
 @Singleton
 class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle: ApplicationLifecycle) extends Provider[MemcachedClient] {
@@ -41,11 +41,12 @@ class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle
           // Use plain SASL to connect to memcached
           val ad = new AuthDescriptor(Array("PLAIN"),
             new PlainCallbackHandler(memcacheUser, memcachePassword))
-          val cf = if (consistentHashing) new ConnectionFactoryBuilder(new KetamaConnectionFactory()) else new ConnectionFactoryBuilder()
+          val cf = (if (consistentHashing) new ConnectionFactoryBuilder(new KetamaConnectionFactory()) else new ConnectionFactoryBuilder())
             .setProtocol(ConnectionFactoryBuilder.Protocol.BINARY)
             .setAuthDescriptor(ad)
+            .build()
 
-          new MemcachedClient(cf.build(), addrs)
+          new MemcachedClient(cf, addrs)
         }.getOrElse {
           new MemcachedClient(addrs)
         }
