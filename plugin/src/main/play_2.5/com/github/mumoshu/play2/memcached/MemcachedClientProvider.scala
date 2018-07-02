@@ -22,7 +22,7 @@ class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle
         new MemcachedClient(AddrUtil.getAddresses(endpoint))
       }.getOrElse {
         lazy val singleHost = configuration.getString("memcached.host").map(AddrUtil.getAddresses)
-        lazy val consistentHashing = configuration.getBoolean("memcached.enableConsistentHashing").getOrElse(false)
+        lazy val consistentHashing = configuration.getBoolean("memcached.consistentHashing").getOrElse(false)
         lazy val multipleHosts = configuration.getString("memcached.1.host").map { _ =>
           def accumulate(nb: Int): String = {
             configuration.getString("memcached." + nb + ".host").map { h => h + " " + accumulate(nb + 1) }.getOrElse("")
