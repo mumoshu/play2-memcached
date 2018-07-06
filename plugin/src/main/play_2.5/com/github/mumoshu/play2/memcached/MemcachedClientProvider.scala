@@ -9,7 +9,7 @@ import scala.concurrent.Future
 
 import javax.inject.{Inject, Singleton, Provider}
 
-import net.spy.memcached.{DefaultHashAlgorithm, KetamaConnectionFactory, ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
+import net.spy.memcached.{KetamaConnectionFactory, ConnectionFactoryBuilder, AddrUtil, MemcachedClient}
 
 @Singleton
 class MemcachedClientProvider @Inject() (configuration: Configuration, lifecycle: ApplicationLifecycle) extends Provider[MemcachedClient] {
