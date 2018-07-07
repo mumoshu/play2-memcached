@@ -34,32 +34,40 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
       val p = Promise[Option[T]]() // create incomplete promise/future
       client.asyncGet(namespace + hash(key), tc).addListener(new GetCompletionListener() {
         def onComplete(result: GetFuture[_]) {
-          result.getStatus().getStatusCode() match {
-            case StatusCode.SUCCESS => {
-              val any = result.get
-              logger.debug("any is " + any.getClass)
-              p.success(Option(
-                any match {
-                  case x if ct.runtimeClass.isInstance(x) => x.asInstanceOf[T]
-                  case x if ct == ClassTag.Nothing => x.asInstanceOf[T]
-                  case x => x.asInstanceOf[T]
-                }
-              ))
-            }
-            case StatusCode.ERR_NOT_FOUND => {
-              logger.debug("Cache miss for " + namespace + key)
-              p.success(None)
-            }
-            case _ => {
-              val msg = "An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
-                "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
-              if (throwExceptionFromGetOnError) {
-                p.failure(new RuntimeException(msg))
-              } else {
-                logger.error(msg)
+          try {
+            result.getStatus().getStatusCode() match {
+              case StatusCode.SUCCESS => {
+                val any = result.get
+                logger.debug("any is " + any.getClass)
+                p.success(Option(
+                  any match {
+                    case x if ct.runtimeClass.isInstance(x) => x.asInstanceOf[T]
+                    case x if ct == ClassTag.Nothing => x.asInstanceOf[T]
+                    case x => x.asInstanceOf[T]
+                  }
+                ))
+              }
+              case StatusCode.ERR_NOT_FOUND => {
+                logger.debug("Cache miss for " + namespace + key)
                 p.success(None)
               }
+              case _ => {
+                fail(result, None)
+              }
             }
+          } catch {
+            case e: Throwable => fail(result, Some(e))
+          }
+        }
+
+        def fail(result: GetFuture[_], exception: Option[Throwable]): Unit = {
+          val msg = "An error has occured while getting the value from memcached. ct=" + ct + ". key=" + key + ". " +
+            "spymemcached code: " + result.getStatus().getStatusCode() + " memcached code:" + result.getStatus().getMessage()
+          if (throwExceptionFromGetOnError) {
+            p.failure(exception.fold(new RuntimeException(msg))(new RuntimeException(msg, _)))
+          } else {
+            logger.error(msg)
+            p.success(None)
           }
         }
       })
