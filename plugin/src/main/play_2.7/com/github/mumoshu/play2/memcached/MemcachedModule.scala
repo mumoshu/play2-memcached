@@ -9,7 +9,7 @@ import play.api.{Configuration, Environment}
 import play.api.cache._
 import play.api.inject._
 
-import play.cache.{ AsyncCacheApi => JavaAsyncCacheApi, SyncCacheApi => JavaSyncCacheApi, CacheApi => JavaCacheApi, DefaultAsyncCacheApi => JavaDefaultAsyncCacheApi, DefaultSyncCacheApi => JavaDefaultSyncCacheApi, NamedCacheImpl }
+import play.cache.{ AsyncCacheApi => JavaAsyncCacheApi, SyncCacheApi => JavaSyncCacheApi, DefaultAsyncCacheApi => JavaDefaultAsyncCacheApi, DefaultSyncCacheApi => JavaDefaultSyncCacheApi, NamedCacheImpl }
 
 import javax.inject.{Inject, Singleton, Provider}
 
@@ -34,8 +34,6 @@ class MemcachedModule extends SimpleModule((environment, configuration) => {
     bind[JavaAsyncCacheApi].qualifiedWith(namedCache).to(new NamedJavaAsyncCacheApiProvider(cacheApiKey)),
     bind[Cached].qualifiedWith(namedCache).to(new NamedCachedProvider(cacheApiKey)),
     bind[SyncCacheApi].qualifiedWith(namedCache).to(new NamedSyncCacheApiProvider(cacheApiKey)),
-    bind[CacheApi].qualifiedWith(namedCache).to(new NamedSyncCacheApiProvider(cacheApiKey)),
-    bind[JavaCacheApi].qualifiedWith(namedCache).to(new NamedJavaSyncCacheApiProvider(cacheApiKey)),
     bind[JavaSyncCacheApi].qualifiedWith(namedCache).to(new NamedJavaSyncCacheApiProvider(cacheApiKey))
   )
 
@@ -58,16 +56,14 @@ class MemcachedModule extends SimpleModule((environment, configuration) => {
     bindDefault[AsyncCacheApi],
     bindDefault[JavaAsyncCacheApi],
     bindDefault[SyncCacheApi],
-    bindDefault[CacheApi],
-    bindDefault[JavaCacheApi],
     bindDefault[JavaSyncCacheApi]
   ) ++ bindCache(defaultCacheName) ++ bindCaches.flatMap(bindCache)
 })
 
 private class NamedSyncCacheApiProvider(key: BindingKey[AsyncCacheApi])
-    extends Provider[SyncCacheApi with CacheApi] {
+    extends Provider[SyncCacheApi] {
   @Inject private var injector: Injector = _
-  lazy val get: SyncCacheApi with CacheApi =
+  lazy val get: SyncCacheApi =
     new DefaultSyncCacheApi(injector.instanceOf(key))
 }
 
@@ -78,9 +74,9 @@ private class NamedJavaAsyncCacheApiProvider(key: BindingKey[AsyncCacheApi]) ext
 }
 
 private class NamedJavaSyncCacheApiProvider(key: BindingKey[AsyncCacheApi])
-    extends Provider[JavaSyncCacheApi with JavaCacheApi] {
+    extends Provider[JavaSyncCacheApi] {
   @Inject private var injector: Injector = _
-  lazy val get: JavaSyncCacheApi with JavaCacheApi =
+  lazy val get: JavaSyncCacheApi =
     new JavaDefaultSyncCacheApi(new JavaDefaultAsyncCacheApi(injector.instanceOf(key)))
 }
 
