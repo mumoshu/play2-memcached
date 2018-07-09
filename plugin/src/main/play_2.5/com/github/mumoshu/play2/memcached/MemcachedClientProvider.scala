@@ -1,7 +1,6 @@
 package com.github.mumoshu.play2.memcached
 
 import net.spy.memcached.auth.{PlainCallbackHandler, AuthDescriptor}
-import play.api.cache.CacheApi
 import play.api.{Logger, Configuration, Environment}
 import play.api.inject.{ BindingKey, Injector, ApplicationLifecycle }
 
