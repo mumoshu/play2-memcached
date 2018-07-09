@@ -7,6 +7,6 @@ val playVersion = scala.util.Properties.envOrElse("PLAY_VERSION", "2.6.6")
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % playVersion)
 
-addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.1")
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "2.3")
 
-addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.0.0")
+addSbtPlugin("com.jsuereth" % "sbt-pgp" % "1.1.1")
