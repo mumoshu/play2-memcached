@@ -1,0 +1,1 @@
+../../../../../../play_2.5/com/github/mumoshu/play2/memcached/Slf4JLogger.scala
