@@ -1,21 +1,14 @@
 language: scala
 scala:
-  - 2.10.5
-  - 2.11.6
   - 2.11.12
   - 2.12.6
+# - 2.13.0-M4
 services:
   - memcache
 jdk:
-  - openjdk7
-  - oraclejdk7
   - oraclejdk8
 env:
   - PLAY_VERSION=2.7.0-M1
-  - PLAY_VERSION=2.6.2
-  - PLAY_VERSION=2.5.0
-  - PLAY_VERSION=2.4.0
-  - PLAY_VERSION=2.3.9
 # see https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
   - cat /etc/hosts
@@ -25,44 +18,4 @@ before_install:
   - cat /etc/hosts
 # see https://docs.travis-ci.com/user/languages/scala#Default-Test-Command about $TRAVIS_SCALA_VERSION
 script:
-  - if [ "$PLAY_VERSION" = "2.3.9" ]; then cd play23; fi; if [ "$PLAY_VERSION" = "2.6.2" ]; then cd play26; fi; if [ "$PLAY_VERSION" = "2.7.0-M1" ]; then cd play27; fi; pwd; sbt ++$TRAVIS_SCALA_VERSION test
-matrix:
-  exclude:
-    - env: PLAY_VERSION=2.7.0-M1
-      scala: 2.10.5
-    - env: PLAY_VERSION=2.7.0-M1
-      scala: 2.11.6
-    - env: PLAY_VERSION=2.7.0-M1
-      jdk: openjdk7
-    - env: PLAY_VERSION=2.7.0-M1
-      jdk: oraclejdk7
-    - env: PLAY_VERSION=2.6.2
-      scala: 2.10.5
-    - env: PLAY_VERSION=2.6.2
-      scala: 2.11.6
-    - env: PLAY_VERSION=2.6.2
-      jdk: openjdk7
-    - env: PLAY_VERSION=2.6.2
-      jdk: oraclejdk7
-    - env: PLAY_VERSION=2.5.0
-      scala: 2.10.5
-    - env: PLAY_VERSION=2.5.0
-      scala: 2.11.6
-    - env: PLAY_VERSION=2.5.0
-      scala: 2.12.6
-    - env: PLAY_VERSION=2.5.0
-      jdk: openjdk7
-    - env: PLAY_VERSION=2.5.0
-      jdk: oraclejdk7
-    - env: PLAY_VERSION=2.4.0
-      jdk: openjdk7
-    - env: PLAY_VERSION=2.4.0
-      jdk: oraclejdk7
-    - env: PLAY_VERSION=2.4.0
-      scala: 2.11.12
-    - env: PLAY_VERSION=2.4.0
-      scala: 2.12.6
-    - env: PLAY_VERSION=2.3.9
-      scala: 2.11.12
-    - env: PLAY_VERSION=2.3.9
-      scala: 2.12.6
+  - sbt ++$TRAVIS_SCALA_VERSION test
