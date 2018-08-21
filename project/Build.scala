@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.9.2"
+  val appVersion      = "0.10.0-M1"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
@@ -49,7 +49,7 @@ object ApplicationBuild extends Build {
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
-      libraryDependencies += "net.spy" % "spymemcached" % (if(playMajorAndMinorVersion.equals("2.6")){ "2.12.3" } else { "2.9.0" }),
+      libraryDependencies += "net.spy" % "spymemcached" % (if(playMajorAndMinorVersion.equals("2.6") || playMajorAndMinorVersion.equals("2.7")){ "2.12.3" } else { "2.9.0" }),
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
