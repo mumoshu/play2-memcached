@@ -8,7 +8,7 @@ services:
 jdk:
   - oraclejdk8
 env:
-  - PLAY_VERSION=2.7.0-M1
+  - PLAY_VERSION=2.7.0-M2
 # see https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
   - cat /etc/hosts
