@@ -16,7 +16,7 @@ For Play 2.6.x:
 ```scala
   val appDependencies = Seq(
     play.PlayImport.cacheApi,
-    "com.github.mumoshu" %% "play2-memcached-play26" % "0.9.2"
+    "com.github.mumoshu" %% "play2-memcached-play26" % "0.9.3"
   )
   val main = Project(appName).enablePlugins(play.PlayScala).settings(
     version := appVersion,
@@ -345,6 +345,8 @@ Configure your configuration endpoint in `application.conf`:
 0.9.1 Remove global state by removing reference to deprecated Play.current
 
 0.9.2 Fix frozen future in 2.6 API
+
+0.9.3 Allow config to enable consistent hashing ([#59](https://github.com/mumoshu/play2-memcached/pull/59), thanks to @duknic)
 
 ### Publishing to the central
 
