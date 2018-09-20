@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.10.0-M1"
+  val appVersion      = "0.10.0-M2"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
@@ -16,21 +16,6 @@ object ApplicationBuild extends Build {
     val version = play.core.PlayVersion.current
     val majorMinor = version.split("""\.""").take(2).mkString("")
     s"play$majorMinor"
-  }
-
-  def playMajorAndMinorVersion: String = {
-    val v = play.core.PlayVersion.current
-    v.split("""\.""").take(2).mkString(".")
-  }
-
-  def playVersionSpecificSourceDirectoryUnder(sd: java.io.File): java.io.File = {
-    val versionSpecificSrc = new java.io.File(sd, "play_" + playMajorAndMinorVersion)
-    val defaultSrc = new java.io.File(sd, "default")
-    if (versionSpecificSrc.exists) versionSpecificSrc else defaultSrc
-  }
-
-  def playVersionSpecificUnmanagedSourceDirectories(sds: Seq[java.io.File], sd: java.io.File) = {
-    Seq(playVersionSpecificSourceDirectoryUnder(sd)) ++ sds
   }
 
   lazy val root = Project("root", base = file("."))
@@ -49,7 +34,7 @@ object ApplicationBuild extends Build {
       resolvers += "Spy Repository" at "http://files.couchbase.com/maven2",
       resolvers += "Scalaz Bintray Repo"  at "http://dl.bintray.com/scalaz/releases",
       libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
-      libraryDependencies += "net.spy" % "spymemcached" % (if(playMajorAndMinorVersion.equals("2.6") || playMajorAndMinorVersion.equals("2.7")){ "2.12.3" } else { "2.9.0" }),
+      libraryDependencies += "net.spy" % "spymemcached" % "2.12.3",
       libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-cache" % play.core.PlayVersion.current % "provided",
       libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
@@ -87,29 +72,21 @@ object ApplicationBuild extends Build {
           </developers>
         ),
       unmanagedSourceDirectories in Compile := {
-        playVersionSpecificUnmanagedSourceDirectories((unmanagedSourceDirectories in Compile).value, (sourceDirectory in Compile).value)
+        (unmanagedSourceDirectories in Compile).value ++ Seq((sourceDirectory in Compile).value)
       },
       unmanagedSourceDirectories in Test := {
-        playVersionSpecificUnmanagedSourceDirectories((unmanagedSourceDirectories in Test).value, (sourceDirectory in Test).value)
+        (unmanagedSourceDirectories in Test).value ++ Seq((sourceDirectory in Test).value)
       }
     )
 
-    def playCache: ModuleID = {
-      play2compat.PlayCache
-    }
-
-    def playScalaPlugin: AutoPlugin = {
-      play2compat.PlayScala
-    }
-
     lazy val scalaSample = Project(
       "scala-sample",
-      playVersionSpecificSourceDirectoryUnder(file("samples/scala"))
-    ).enablePlugins(playScalaPlugin).settings(
-        playScalaPlugin.projectSettings: _*
+      file("samples/scala")
+    ).enablePlugins(play.sbt.PlayScala).settings(
+        play.sbt.PlayScala.projectSettings: _*
     ).settings(
       resolvers += "Typesafe Maven Repository" at "https://dl.bintray.com/typesafe/maven-releases/",
-      libraryDependencies += playCache,
+      libraryDependencies += play.sbt.PlayImport.cacheApi,
       libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       parallelExecution in Test := false,
       publishLocal := {},
@@ -120,9 +97,9 @@ object ApplicationBuild extends Build {
 
     lazy val javaSample = Project(
       "java-sample",
-      playVersionSpecificSourceDirectoryUnder(file("samples/java"))
-    ).enablePlugins(play2compat.PlayJava).settings(baseSettings: _*).settings(
-      libraryDependencies += playCache,
+      file("samples/java")
+    ).enablePlugins(play.sbt.PlayJava).settings(baseSettings: _*).settings(
+      libraryDependencies += play.sbt.PlayImport.cacheApi,
       libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
       publishLocal := {},
       publish := {},
