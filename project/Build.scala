@@ -6,7 +6,7 @@ import com.typesafe.sbt.pgp.PgpKeys._
 object ApplicationBuild extends Build {
 
   val appName         = "play2-memcached-" + playShortName
-  val appVersion      = "0.10.0-M2"
+  val appVersion      = "0.10.0-M3"
 
   lazy val baseSettings = Seq(
     parallelExecution in Test := false
