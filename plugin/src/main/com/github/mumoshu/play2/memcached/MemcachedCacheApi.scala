@@ -66,7 +66,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
           if (throwExceptionFromGetOnError) {
             p.failure(exception.fold(new RuntimeException(msg))(new RuntimeException(msg, _)))
           } else {
-            logger.error(msg)
+            logger.error(msg, exception.orNull)
             p.success(None)
           }
         }
