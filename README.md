@@ -350,6 +350,8 @@ Configure your configuration endpoint in `application.conf`:
 
 0.10.0-M2 Built for Play 2.7.0-M2 and Scala 2.11.12 and 2.12.6. Artifact ID for this build is `play2-memcached-play27_2.1{1,2}`
 
+0.10.0-RC3 Built for Play 2.7.0-RC3 and Scala 2.11.12 and 2.12.7. Artifact ID for this build is `play2-memcached-play27_2.1{1,2}`
+
 ### Publishing to the central
 
 ```
