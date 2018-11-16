@@ -44,13 +44,13 @@ public interface MemcachedComponents extends ConfigurationComponents, AkkaCompon
 
     default MemcachedClientProvider memcachedClientProvider() {
         return new MemcachedClientProvider(
-            configuration(),
+            config(),
             applicationLifecycle().asScala()
         );
     }
 
     default AsyncCacheApi cacheApi(String name) {
-        play.api.cache.AsyncCacheApi scalaAsyncCacheApi = new MemcachedCacheApi(name, memcachedClientProvider().get(), configuration(), environment().asScala(), executionContext());
+        play.api.cache.AsyncCacheApi scalaAsyncCacheApi = new MemcachedCacheApi(name, memcachedClientProvider().get(), config(), environment().asScala(), executionContext());
         return new DefaultAsyncCacheApi(scalaAsyncCacheApi);
     }
 
