@@ -1,16 +1,12 @@
+import com.github.mumoshu.play2.memcached._
 import net.spy.memcached.MemcachedClient
 import org.specs2.mutable._
-import play.api.test._
-
-import com.github.mumoshu.play2.memcached._
 import play.api.cache.AsyncCacheApi
-import play.api.inject._
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.cache.NamedCacheImpl
-import play.test.WithApplication
+import play.api.test.WithApplication
 
 import scala.collection.JavaConverters._
-
-import play.api.{Configuration, Environment, ApplicationLoader}
 
 object MemcachedSpec extends Specification {
 
@@ -55,29 +51,24 @@ object MemcachedSpec extends Specification {
   }
 
   "Injector" should {
-    import play.api.inject.bind
 
-    def app = play.test.Helpers.fakeApplication(
-      configurationMap.asJava
-    )
+    def app = GuiceApplicationBuilder().configure(configurationMap).build()
 
-    def injector = app.injector
-
-    "provide memcached clients" in {
-      val memcachedClient = injector.instanceOf(play.api.inject.BindingKey(classOf[MemcachedClient]))
+    "provide memcached clients" in new WithApplication(app) {
+      val memcachedClient = app.injector.instanceOf(play.api.inject.BindingKey(classOf[MemcachedClient]))
 
       memcachedClient must beAnInstanceOf[MemcachedClient]
     }
 
-    "provide a CacheApi implementation backed by memcached" in {
-      val cacheApi = injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]))
+    "provide a CacheApi implementation backed by memcached" in new WithApplication(app) {
+      val cacheApi = app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("default")
     }
 
-    "provide a named CacheApi implementation backed by memcached" in {
-      val cacheApi = injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
+    "provide a named CacheApi implementation backed by memcached" in new WithApplication(app) {
+      val cacheApi = app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("secondary")
