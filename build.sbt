@@ -1,5 +1,7 @@
 val appName         = "play2-memcached-" + playShortName
 val appVersion      = "0.10.0-RC3"
+val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
+val h2databaseTest  = "com.h2database" % "h2" % "1.4.196" % Test
 
 lazy val baseSettings = Seq(
   scalaVersion := "2.12.7",
@@ -23,12 +25,11 @@ lazy val root = Project("root", base = file("."))
 lazy val plugin = Project(appName, base = file("plugin"))
   .settings(baseSettings: _*)
   .settings(
-    libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
-    libraryDependencies += "net.spy" % "spymemcached" % "2.12.3",
-    libraryDependencies += "com.typesafe.play" %% "play" % play.core.PlayVersion.current % "provided",
-    libraryDependencies += cacheApi % "provided",
-    libraryDependencies += "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % "provided,test",
-    libraryDependencies += "org.specs2" %% "specs2-core" % "3.9.4" % "test",
+    libraryDependencies += h2databaseTest,
+    libraryDependencies += spymemcached,
+    libraryDependencies += playCore % Provided,
+    libraryDependencies += cacheApi % Provided,
+    libraryDependencies += specs2 % Test,
     organization := "com.github.mumoshu",
     version := appVersion,
     //scalacOptions += "-deprecation",
@@ -77,7 +78,7 @@ lazy val scalaSample = Project(
 .settings(baseSettings: _*)
 .settings(
   libraryDependencies += cacheApi,
-  libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
+  libraryDependencies += h2databaseTest,
   publishLocal := {},
   publish := {}
 ).dependsOn(plugin)
@@ -89,7 +90,7 @@ lazy val javaSample = Project(
 .settings(baseSettings: _*)
 .settings(
   libraryDependencies += cacheApi,
-  libraryDependencies += "com.h2database" % "h2" % "1.4.196" % Test,
+  libraryDependencies += h2databaseTest,
   publishLocal := {},
   publish := {}
 ).dependsOn(plugin)
