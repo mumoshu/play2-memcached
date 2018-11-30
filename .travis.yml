@@ -1,14 +1,14 @@
 language: scala
 scala:
   - 2.11.12
-  - 2.12.6
+  - 2.12.7
 # - 2.13.0-M4
 services:
   - memcache
 jdk:
   - oraclejdk8
 env:
-  - PLAY_VERSION=2.7.0-M2
+  - PLAY_VERSION=2.7.0-RC8
 # see https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
   - cat /etc/hosts
