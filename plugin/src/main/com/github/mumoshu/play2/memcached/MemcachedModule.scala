@@ -2,10 +2,6 @@ package com.github.mumoshu.play2.memcached
 
 import akka.stream.Materializer
 
-import java.util.concurrent.TimeUnit
-
-import net.spy.memcached.transcoders.Transcoder
-import play.api.{Configuration, Environment}
 import play.api.cache._
 import play.api.inject._
 
@@ -42,7 +38,7 @@ class MemcachedModule extends SimpleModule((environment, configuration) => {
     val namedCache = named(name)
     val cacheApiKey = bind[AsyncCacheApi].qualifiedWith(namedCache)
     Seq(
-      cacheApiKey.to(new MemcachedCacheApiProvider(name, bind[MemcachedClient], configuration, environment))
+      cacheApiKey.to(new MemcachedCacheApiProvider(name, bind[MemcachedClient], configuration.underlying, environment))
     ) ++ wrapperBindings(cacheApiKey, namedCache)
   }
 

@@ -2,11 +2,12 @@ package com.github.mumoshu.play2.memcached
 
 import akka.Done
 
+import com.typesafe.config.Config
 import net.spy.memcached.transcoders.Transcoder
 import net.spy.memcached.internal.{ GetCompletionListener, GetFuture, OperationCompletionListener, OperationFuture }
 import net.spy.memcached.ops.StatusCode
 import play.api.cache.AsyncCacheApi
-import play.api.{Environment, Logger, Configuration}
+import play.api.{Environment, Logger}
 
 import javax.inject.{Inject, Singleton}
 
@@ -18,11 +19,11 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.reflect.ClassTag
 
 @Singleton
-class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, configuration: Configuration, environment: Environment)(implicit context: ExecutionContext) extends AsyncCacheApi {
+class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedClient, config: Config, environment: Environment)(implicit context: ExecutionContext) extends AsyncCacheApi {
   lazy val logger = Logger("memcached.plugin")
   lazy val tc = new CustomSerializing(environment.classLoader).asInstanceOf[Transcoder[Any]]
-  lazy val hashkeys: String = configuration.getString("memcached.hashkeys").getOrElse("off")
-  lazy val throwExceptionFromGetOnError: Boolean = configuration.getBoolean("memcached.throwExceptionFromGetOnError").getOrElse(false)
+  lazy val hashkeys: String = config.getString("memcached.hashkeys")
+  lazy val throwExceptionFromGetOnError: Boolean = config.getBoolean("memcached.throwExceptionFromGetOnError")
 
   def get[T: ClassTag](key: String): Future[Option[T]] = {
     if (key.isEmpty) {
