@@ -86,7 +86,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
   def set(key: String, value: Any, expiration: Duration = Duration.Inf): Future[Done] = {
     if (!key.isEmpty) {
       val p = Promise[Done]() // create incomplete promise/future
-      val exp = if (expiration.isFinite()) expiration.toSeconds.toInt else 0
+      val exp = if (expiration.isFinite) expiration.toSeconds.toInt else 0
       client.set(namespace + hash(key), exp, value, tc).addListener(new OperationCompletionListener() {
         def onComplete(result: OperationFuture[_]) {
           result.getStatus().getStatusCode() match {
