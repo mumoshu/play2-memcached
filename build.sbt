@@ -4,9 +4,12 @@ val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
 val h2databaseTest  = "com.h2database" % "h2" % "1.4.196" % Test
 
 lazy val baseSettings = Seq(
-  scalaVersion := "2.12.7",
-  crossScalaVersions := Seq("2.11.12", "2.12.7"),
-  parallelExecution in Test := false
+  scalaVersion := "2.12.8",
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0-M5"),
+  parallelExecution in Test := false,
+  // Workaround until omnidoc gets published for Scala 2.13
+  // http://central.maven.org/maven2/com/typesafe/play/play-omnidoc_2.13/
+  PlayKeys.playOmnidoc := false
 )
 
 def playShortName: String = {

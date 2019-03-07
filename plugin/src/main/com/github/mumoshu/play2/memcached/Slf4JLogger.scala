@@ -13,7 +13,7 @@ class Slf4JLogger(name: String) extends AbstractLogger(name) {
 
   def isInfoEnabled = logger.isInfoEnabled
 
-  def log(level: Level, msg: AnyRef, throwable: Throwable) {
+  def log(level: Level, msg: AnyRef, throwable: Throwable): Unit = {
     val message = msg.toString
     level match {
       case Level.TRACE => logger.trace(message, throwable)

@@ -34,7 +34,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
       logger.debug("Getting the cache for key " + namespace + key)
       val p = Promise[Option[T]]() // create incomplete promise/future
       client.asyncGet(namespace + hash(key), tc).addListener(new GetCompletionListener() {
-        def onComplete(result: GetFuture[_]) {
+        def onComplete(result: GetFuture[_]): Unit = {
           try {
             result.getStatus().getStatusCode() match {
               case StatusCode.SUCCESS => {
@@ -86,9 +86,9 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
   def set(key: String, value: Any, expiration: Duration = Duration.Inf): Future[Done] = {
     if (!key.isEmpty) {
       val p = Promise[Done]() // create incomplete promise/future
-      val exp = if (expiration.isFinite()) expiration.toSeconds.toInt else 0
+      val exp = if (expiration.isFinite) expiration.toSeconds.toInt else 0
       client.set(namespace + hash(key), exp, value, tc).addListener(new OperationCompletionListener() {
-        def onComplete(result: OperationFuture[_]) {
+        def onComplete(result: OperationFuture[_]): Unit = {
           result.getStatus().getStatusCode() match {
             case StatusCode.SUCCESS => {
               p.success(Done)
@@ -116,7 +116,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
     if (!key.isEmpty) {
       val p = Promise[Done]() // create incomplete promise/future
       client.delete(namespace + hash(key)).addListener(new OperationCompletionListener() {
-        def onComplete(result: OperationFuture[_]) {
+        def onComplete(result: OperationFuture[_]): Unit = {
           result.getStatus().getStatusCode() match {
             case StatusCode.SUCCESS => {
               p.success(Done)
@@ -147,7 +147,7 @@ class MemcachedCacheApi @Inject() (val namespace: String, val client: MemcachedC
   def removeAll(): Future[Done] = {
     val p = Promise[Done]() // create incomplete promise/future
     client.flush().addListener(new OperationCompletionListener() {
-      def onComplete(result: OperationFuture[_]) {
+      def onComplete(result: OperationFuture[_]): Unit = {
         result.getStatus().getStatusCode() match {
           case StatusCode.SUCCESS => {
             p.success(Done)

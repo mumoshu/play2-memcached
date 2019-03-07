@@ -359,11 +359,12 @@ Configure your configuration endpoint in `application.conf`:
 PLAY_VERSION=2.5.0 sbt ++2.11.12 publishSigned sonatypeRelease
 
 # Play 2.6
-PLAY_VERSION=2.6.0 sbt ++2.12.6 publishSigned sonatypeRelease
+PLAY_VERSION=2.6.0 sbt ++2.12.8 publishSigned sonatypeRelease
 
 # Play 2.7
-PLAY_VERSION=2.7.0-M2 sbt ++2.11.12 publishSigned sonatypeRelease
-PLAY_VERSION=2.7.0-M2 sbt ++2.12.6 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.0 sbt ++2.11.12 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.0 sbt ++2.12.8 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.0 sbt ++2.13.0-M5 publishSigned sonatypeRelease
 ```
 
 ### Acknowledgement
