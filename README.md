@@ -352,6 +352,10 @@ Configure your configuration endpoint in `application.conf`:
 
 0.10.0-RC3 Built for Play 2.7.0-RC8 and Scala 2.11.12 and 2.12.7. Artifact ID for this build is `play2-memcached-play27_2.1{1,2}`
 
+0.10.0 Built for Play 2.7.0 and Scala 2.11.12 and 2.12.8. Artifact ID for this build is `play2-memcached-play27_2.1{1,2}`
+
+0.10.1 Built for Play 2.7.3 and Scala 2.13.0, 2.11.12 and 2.12.8. Artifact ID for this build is `play2-memcached-play27_2.1{1,2,3}`
+
 ### Publishing to the central
 
 ```
@@ -362,9 +366,9 @@ PLAY_VERSION=2.5.0 sbt ++2.11.12 publishSigned sonatypeRelease
 PLAY_VERSION=2.6.0 sbt ++2.12.8 publishSigned sonatypeRelease
 
 # Play 2.7
-PLAY_VERSION=2.7.0 sbt ++2.11.12 publishSigned sonatypeRelease
-PLAY_VERSION=2.7.0 sbt ++2.12.8 publishSigned sonatypeRelease
-PLAY_VERSION=2.7.0 sbt ++2.13.0-M5 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.3 sbt ++2.11.12 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.3 sbt ++2.12.8 publishSigned sonatypeRelease
+PLAY_VERSION=2.7.3 sbt ++2.13.0 publishSigned sonatypeRelease
 ```
 
 ### Acknowledgement
