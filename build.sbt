@@ -1,5 +1,5 @@
 val appName         = "play2-memcached-" + playShortName
-val appVersion      = "0.10.0"
+val appVersion      = "0.10.1"
 val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
 val h2databaseTest  = "com.h2database" % "h2" % "1.4.196" % Test
 
