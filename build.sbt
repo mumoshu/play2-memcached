@@ -1,16 +1,12 @@
 val appName         = "play2-memcached-" + playShortName
-val appVersion      = "0.10.1"
+val appVersion      = "0.11.0-SNAPSHOT"
 val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
 val h2databaseTest  = "com.h2database" % "h2" % "1.4.196" % Test
 
 lazy val baseSettings = Seq(
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.0"),
-  parallelExecution in Test := false,
-  fork in Test := true, // can be removed with sbt 1.3.0, see https://github.com/sbt/sbt/issues/4609
-  // Workaround until omnidoc gets published for Scala 2.13
-  // http://central.maven.org/maven2/com/typesafe/play/play-omnidoc_2.13/
-  PlayKeys.playOmnidoc := false
+  scalaVersion := "2.13.1",
+  crossScalaVersions := Seq("2.12.10", "2.13.1"),
+  parallelExecution in Test := false
 )
 
 def playShortName: String = {
