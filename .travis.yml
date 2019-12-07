@@ -4,10 +4,8 @@ scala:
   - 2.13.1
 services:
   - memcache
-jdk:
-  - openjdk8
 env:
-  - PLAY_VERSION=2.8.0-RC2 TRAVIS_JDK=8
+  - PLAY_VERSION=2.8.0-RC5 TRAVIS_JDK=8
 # see https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
   - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh
