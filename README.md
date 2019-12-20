@@ -373,8 +373,8 @@ PLAY_VERSION=2.7.3 sbt ++2.12.8 publishSigned sonatypeRelease
 PLAY_VERSION=2.7.3 sbt ++2.13.0 publishSigned sonatypeRelease
 
 # Play 2.8
-PLAY_VERSION=2.8.0-RC5 sbt ++2.12.10 publishSigned sonatypeRelease
-PLAY_VERSION=2.8.0-RC5 sbt ++2.13.1 publishSigned sonatypeRelease
+PLAY_VERSION=2.8.0 sbt ++2.12.10 publishSigned sonatypeRelease
+PLAY_VERSION=2.8.0 sbt ++2.13.1 publishSigned sonatypeRelease
 ```
 
 ### Acknowledgement
