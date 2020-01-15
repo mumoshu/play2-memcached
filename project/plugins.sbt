@@ -1,6 +1,6 @@
 ivyLoggingLevel := UpdateLogging.Full
 
-val playVersion = scala.util.Properties.envOrElse("PLAY_VERSION", "2.7.3")
+val playVersion = scala.util.Properties.envOrElse("PLAY_VERSION", "2.8.0")
 
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % playVersion)
 

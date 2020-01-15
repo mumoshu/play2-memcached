@@ -2,8 +2,8 @@ libraryDependencies ++= Seq(
   jdbc,
   cacheApi,
   ws,
-  "com.github.mumoshu" %% "play2-memcached-play27" % "0.10.0",
+  "com.github.mumoshu" %% "play2-memcached-play28" % "0.11.0-SNAPSHOT",
   specs2 % Test
 )
 
-resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
