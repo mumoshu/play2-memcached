@@ -15,7 +15,7 @@ For Play 2.6.x and newer:
 
 ```scala
   val appDependencies = Seq(
-    play.PlayImport.cacheApi,
+    play.sbt.PlayImport.cacheApi,
     "com.github.mumoshu" %% "play2-memcached-play26" % "0.9.2"
   )
   val main = Project(appName).enablePlugins(play.PlayScala).settings(
@@ -29,7 +29,7 @@ For Play 2.5.x:
 
 ```scala
   val appDependencies = Seq(
-    play.PlayImport.cache,
+    play.sbt.PlayImport.cache,
     "com.github.mumoshu" %% "play2-memcached-play25" % "0.8.0"
   )
   val main = Project(appName).enablePlugins(play.PlayScala).settings(
@@ -43,7 +43,7 @@ For Play 2.4.x:
 
 ```scala
   val appDependencies = Seq(
-    play.PlayImport.cache,
+    play.sbt.PlayImport.cache,
     "com.github.mumoshu" %% "play2-memcached-play24" % "0.7.0"
   )
   val main = Project(appName).enablePlugins(play.PlayScala).settings(
