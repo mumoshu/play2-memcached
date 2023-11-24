@@ -358,6 +358,8 @@ Configure your configuration endpoint in `application.conf`:
 
 0.11.0 Built for Play 2.8.0 and Scala 2.13.1 and 2.12.10. Artifact ID for this build is `play2-memcached-play28_2.1{2,3}`
 
+0.12.0 Built for Play 2.9.0 and Scala 2.13.12 and 3.3.1. Artifact ID for this build is `play2-memcached-play29_[2.13|3]`
+
 ### Publishing to the central
 
 ```
@@ -375,6 +377,10 @@ PLAY_VERSION=2.7.3 sbt ++2.13.0 publishSigned sonatypeRelease
 # Play 2.8
 PLAY_VERSION=2.8.0 sbt ++2.12.10 publishSigned sonatypeRelease
 PLAY_VERSION=2.8.0 sbt ++2.13.1 publishSigned sonatypeRelease
+
+# Play 2.9
+PLAY_VERSION=2.9.0 sbt ++2.13.12 publishSigned sonatypeRelease
+PLAY_VERSION=2.9.0 sbt ++3.3.1 publishSigned sonatypeRelease
 ```
 
 ### Acknowledgement
