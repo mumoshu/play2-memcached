@@ -55,20 +55,20 @@ object MemcachedSpec extends Specification {
     def app = GuiceApplicationBuilder().configure(configurationMap).build()
 
     "provide memcached clients" in new WithApplication(app) {
-      val memcachedClient = app.injector.instanceOf(play.api.inject.BindingKey(classOf[MemcachedClient]))
+      val memcachedClient = this.app.injector.instanceOf(play.api.inject.BindingKey(classOf[MemcachedClient]))
 
       memcachedClient must beAnInstanceOf[MemcachedClient]
     }
 
     "provide a CacheApi implementation backed by memcached" in new WithApplication(app) {
-      val cacheApi = app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]))
+      val cacheApi = this.app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("default")
     }
 
     "provide a named CacheApi implementation backed by memcached" in new WithApplication(app) {
-      val cacheApi = app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
+      val cacheApi = this.app.injector.instanceOf(play.api.inject.BindingKey(classOf[AsyncCacheApi]).qualifiedWith(new NamedCacheImpl("secondary")))
 
       cacheApi must beAnInstanceOf[MemcachedCacheApi]
       cacheApi.asInstanceOf[MemcachedCacheApi].namespace must equalTo ("secondary")
