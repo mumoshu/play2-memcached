@@ -4,10 +4,13 @@ import org.junit.runner._
 import play.api.cache.SyncCacheApi
 
 import play.api.Application
+import play.api.mvc.Result
 import play.api.test._
 import play.api.test.Helpers._
 import play.cache.NamedCacheImpl
 import play.api.inject.guice.GuiceApplicationBuilder
+
+import scala.concurrent.Future
 
 /**
  * Add your spec here.
@@ -26,14 +29,14 @@ class ApplicationSpec extends Specification {
   "Application" should {
 
     "send 404 on a bad request" in new WithApplication(app){
-      route(this.app, FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
+      route(this.app, FakeRequest(GET, "/boum")) must beSome[Future[Result]].which (status(_) == NOT_FOUND)
     }
 
     "render the index page" in new WithApplication(app){
       val home = route(this.app, FakeRequest(GET, "/")).get
 
       status(home) must equalTo(OK)
-      contentType(home) must beSome.which(_ == "text/html")
+      contentType(home) must beSome[String].which(_ == "text/html")
       contentAsString(home) must contain ("Your new application is ready.")
     }
   }
