@@ -6,7 +6,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.cache.NamedCacheImpl
 import play.api.test.WithApplication
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 object MemcachedSpec extends Specification {
 
