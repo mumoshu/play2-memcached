@@ -1,11 +1,11 @@
 language: scala
 scala:
-  - 2.12.10
-  - 2.13.1
+  - 2.13.12
+  - 3.3.1
 services:
   - memcache
 env:
-  - PLAY_VERSION=2.8.0 TRAVIS_JDK=8
+  - PLAY_VERSION=2.9.0 TRAVIS_JDK=11
 # see https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
 before_install:
   - curl -Ls https://git.io/jabba | bash && . ~/.jabba/jabba.sh

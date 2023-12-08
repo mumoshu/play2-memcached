@@ -18,7 +18,7 @@ class Application @Inject() (cache: SyncCacheApi, @NamedCache("session-cache") s
   }
 
   def get = Action {
-    Ok(cache.get("key").toString)
+    Ok(cache.get[String]("key").toString)
   }
 
   def delete = Action {
@@ -63,6 +63,6 @@ class Application @Inject() (cache: SyncCacheApi, @NamedCache("session-cache") s
   }
 
   def getSessionCache = Action {
-    Ok(sessionCache.get("key").toString)
+    Ok(sessionCache.get[String]("key").toString)
   }
 }

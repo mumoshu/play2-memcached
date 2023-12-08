@@ -4,10 +4,13 @@ import org.junit.runner._
 import play.api.cache.SyncCacheApi
 
 import play.api.Application
+import play.api.mvc.Result
 import play.api.test._
 import play.api.test.Helpers._
 import play.cache.NamedCacheImpl
 import play.api.inject.guice.GuiceApplicationBuilder
+
+import scala.concurrent.Future
 
 /**
  * Add your spec here.
@@ -26,15 +29,19 @@ class ApplicationSpec extends Specification {
   "Application" should {
 
     "send 404 on a bad request" in new WithApplication(app){
-      route(app, FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
+      override def running() = {
+        route(this.app, FakeRequest(GET, "/boum")) must beSome[Future[Result]].which (status(_) == NOT_FOUND)
+      }
     }
 
     "render the index page" in new WithApplication(app){
-      val home = route(app, FakeRequest(GET, "/")).get
+      override def running() = {
+        val home = route(this.app, FakeRequest(GET, "/")).get
 
-      status(home) must equalTo(OK)
-      contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain ("Your new application is ready.")
+        status(home) must equalTo(OK)
+        contentType(home) must beSome[String].which(_ == "text/html")
+        contentAsString(home) must contain ("Your new application is ready.")
+      }
     }
   }
 
@@ -53,22 +60,26 @@ class ApplicationSpec extends Specification {
   "The scala sample application" should {
 
     "return a cached data" in new WithApplication(app){
-      connectingLocalMemcached(app) {
-        c(app, "/cache/get") must equalTo ("None")
-        c(app, "/cache/set") must equalTo ("Cached.")
-        c(app, "/cache/get") must equalTo ("Some(cached value)")
-        c(app, "/session/get") must equalTo ("None")
-        c(app, "/session/set") must equalTo ("Cached.")
-        c(app, "/session/get") must equalTo ("Some(session value)")
-        c(app, "/cache/get") must equalTo ("Some(cached value)")
+      override def running() = {
+        connectingLocalMemcached(this.app) {
+          c(this.app, "/cache/get") must equalTo ("None")
+          c(this.app, "/cache/set") must equalTo ("Cached.")
+          c(this.app, "/cache/get") must equalTo ("Some(cached value)")
+          c(this.app, "/session/get") must equalTo ("None")
+          c(this.app, "/session/set") must equalTo ("Cached.")
+          c(this.app, "/session/get") must equalTo ("Some(session value)")
+          c(this.app, "/cache/get") must equalTo ("Some(cached value)")
+        }
       }
     }
 
     "return expected results" in new WithApplication(app){
-      connectingLocalMemcached(app) {
-        c(app, "/cacheInt") must equalTo ("123class java.lang.Integer 123 int")
-        c(app, "/cacheString") must equalTo ("Some(mikoto)")
-        c(app, "/cacheBool") must equalTo ("true : class java.lang.Boolean, true : boolean")
+      override def running() = {
+        connectingLocalMemcached(this.app) {
+          c(this.app, "/cacheInt") must equalTo ("123class java.lang.Integer 123 int")
+          c(this.app, "/cacheString") must equalTo ("Some(mikoto)")
+          c(this.app, "/cacheBool") must equalTo ("true : class java.lang.Boolean, true : boolean")
+        }
       }
     }
   }

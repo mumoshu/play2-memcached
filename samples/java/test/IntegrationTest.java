@@ -6,7 +6,7 @@ import play.test.*;
 import static play.test.Helpers.*;
 import static org.junit.Assert.*;
 
-import static org.fluentlenium.core.filter.FilterConstructor.*;
+import static io.fluentlenium.core.filter.FilterConstructor.*;
 
 public class IntegrationTest {
 

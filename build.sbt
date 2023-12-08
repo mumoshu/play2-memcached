@@ -1,12 +1,12 @@
 val appName         = "play2-memcached-" + playShortName
-val appVersion      = "0.11.0-SNAPSHOT"
+val appVersion      = "0.12.0-SNAPSHOT"
 val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
-val h2databaseTest  = "com.h2database" % "h2" % "1.4.196" % Test
+val h2databaseTest  = "com.h2database" % "h2" % "2.2.224" % Test
 
 lazy val baseSettings = Seq(
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.12.10", "2.13.1"),
-  parallelExecution in Test := false
+  scalaVersion := "2.13.12",
+  crossScalaVersions := Seq("2.13.12", "3.3.1"),
+  Test / parallelExecution := false
 )
 
 def playShortName: String = {
@@ -40,7 +40,7 @@ lazy val plugin = Project(appName, base = file("plugin"))
       else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
     publishMavenStyle := true,
-    publishArtifact in Test := false,
+    Test / publishArtifact := false,
     pomIncludeRepository := { _ => false },
     pomExtra := (
       <url>https://github.com/mumoshu/play2-memcached</url>
@@ -63,11 +63,11 @@ lazy val plugin = Project(appName, base = file("plugin"))
           </developer>
         </developers>
       ),
-    unmanagedSourceDirectories in Compile := {
-      (unmanagedSourceDirectories in Compile).value ++ Seq((sourceDirectory in Compile).value)
+    Compile/ unmanagedSourceDirectories := {
+      (Compile / unmanagedSourceDirectories).value ++ Seq((Compile / sourceDirectory).value)
     },
-    unmanagedSourceDirectories in Test := {
-      (unmanagedSourceDirectories in Test).value ++ Seq((sourceDirectory in Test).value)
+    Test / unmanagedSourceDirectories := {
+      (Test / unmanagedSourceDirectories).value ++ Seq((Test / sourceDirectory).value)
     }
   )
 
