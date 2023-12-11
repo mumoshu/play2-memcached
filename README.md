@@ -360,28 +360,14 @@ Configure your configuration endpoint in `application.conf`:
 
 0.12.0 Built for Play 2.9.0 and Scala 2.13.12 and 3.3.1. Artifact ID for this build is `play2-memcached-play29_[2.13|3]`
 
-### Publishing to the central
+### Releasing play2-memcached / Publishing to the maven central
 
-```
-# Play 2.5
-PLAY_VERSION=2.5.0 sbt ++2.11.12 publishSigned sonatypeRelease
+1. Tag the release: `git tag -s 1.2.3`
+1. Push tag: `git push upstream 1.2.3`
+1. GitHub action workflow does the rest: https://github.com/mumoshu/play2-memcached/actions/workflows/publish.yml
+  - Snapshots are published to https://oss.sonatype.org/content/repositories/snapshots/com/github/mumoshu/
+  - Releases are published to https://repo1.maven.org/maven2/com/github/mumoshu/ (takes up to 1 hour)
 
-# Play 2.6
-PLAY_VERSION=2.6.0 sbt ++2.12.8 publishSigned sonatypeRelease
-
-# Play 2.7
-PLAY_VERSION=2.7.3 sbt ++2.11.12 publishSigned sonatypeRelease
-PLAY_VERSION=2.7.3 sbt ++2.12.8 publishSigned sonatypeRelease
-PLAY_VERSION=2.7.3 sbt ++2.13.0 publishSigned sonatypeRelease
-
-# Play 2.8
-PLAY_VERSION=2.8.0 sbt ++2.12.10 publishSigned sonatypeRelease
-PLAY_VERSION=2.8.0 sbt ++2.13.1 publishSigned sonatypeRelease
-
-# Play 2.9
-PLAY_VERSION=2.9.0 sbt ++2.13.12 publishSigned sonatypeRelease
-PLAY_VERSION=2.9.0 sbt ++3.3.1 publishSigned sonatypeRelease
-```
 
 ### Acknowledgement
 
