@@ -1,5 +1,4 @@
 val appName         = "play2-memcached-" + playShortName
-val appVersion      = "0.12.0-SNAPSHOT"
 val spymemcached    = "net.spy" % "spymemcached" % "2.12.3"
 val h2databaseTest  = "com.h2database" % "h2" % "2.2.224" % Test
 
@@ -15,11 +14,20 @@ def playShortName: String = {
   s"play$majorMinor"
 }
 
+// Customise sbt-dynver's behaviour to make it work with tags which aren't v-prefixed
+ThisBuild / dynverVTagPrefix := true
+
+// Sanity-check: assert that version comes from a tag (e.g. not a too-shallow clone)
+// https://github.com/dwijnand/sbt-dynver/#sanity-checking-the-version
+Global / onLoad := (Global / onLoad).value.andThen { s =>
+  dynverAssertTagVersion.value
+  s
+}
+
 lazy val root = Project("root", base = file("."))
   .settings(baseSettings: _*)
   .settings(
-    publishLocal := {},
-    publish := {}
+    publish / skip := true,
   ).aggregate(plugin, scalaSample, javaSample)
 
 lazy val plugin = Project(appName, base = file("plugin"))
@@ -31,38 +39,16 @@ lazy val plugin = Project(appName, base = file("plugin"))
     libraryDependencies += cacheApi % Provided,
     libraryDependencies += specs2 % Test,
     organization := "com.github.mumoshu",
-    version := appVersion,
     //scalacOptions += "-deprecation",
-    publishTo := {
-      val v = version.value
-      val nexus = "https://oss.sonatype.org/"
-      if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
-      else                             Some("releases" at nexus + "service/local/staging/deploy/maven2")
-    },
-    publishMavenStyle := true,
     Test / publishArtifact := false,
     pomIncludeRepository := { _ => false },
-    pomExtra := (
-      <url>https://github.com/mumoshu/play2-memcached</url>
-        <licenses>
-          <license>
-            <name>BSD-style</name>
-            <url>http://www.opensource.org/licenses/bsd-license.php</url>
-            <distribution>repo</distribution>
-          </license>
-        </licenses>
-        <scm>
-          <url>git@github.com:mumoshu/play2-memcached.git</url>
-          <connection>scm:git:git@github.com:mumoshu/play2-memcached.git</connection>
-        </scm>
-        <developers>
-          <developer>
-            <id>you</id>
-            <name>KUOKA Yusuke</name>
-            <url>https://github.com/mumoshu</url>
-          </developer>
-        </developers>
-      ),
+    licenses := Seq("Apache License" -> url("https://github.com/mumoshu/play2-memcached/blob/main/LICENSE")),
+    developers += Developer(
+      "you",
+      "KUOKA Yusuke",
+      "you",
+      url("https://github.com/mumoshu")
+    ),
     Compile/ unmanagedSourceDirectories := {
       (Compile / unmanagedSourceDirectories).value ++ Seq((Compile / sourceDirectory).value)
     },
@@ -79,8 +65,7 @@ lazy val scalaSample = Project(
 .settings(
   libraryDependencies += cacheApi,
   libraryDependencies += h2databaseTest,
-  publishLocal := {},
-  publish := {}
+  publish / skip := true,
 ).dependsOn(plugin)
 
 lazy val javaSample = Project(
@@ -91,6 +76,5 @@ lazy val javaSample = Project(
 .settings(
   libraryDependencies += cacheApi,
   libraryDependencies += h2databaseTest,
-  publishLocal := {},
-  publish := {}
+  publish / skip := true,
 ).dependsOn(plugin)
